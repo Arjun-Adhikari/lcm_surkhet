@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MovieStatus {
+  NOW_SHOWING
+  COMMING_SOON
+  ARCHIVED
+}
+
+model Movie {
+  id              String      @id @default(cuid())
+  title           String
+  originalTitle   String?
+  director        String
+  cast            String[]    @db.Text
+  durationMinutes Int
+  genre           String[]    @db.Text
+  synopsis        String      @db.Text
+  posterUrl       String      @db.Text
+  backdropUrl     String      @db.Text
+  trailerUrl      String      @db.Text
+  status          MovieStatus @default(NOW_SHOWING)
+  releaseDate     DateTime    @db.Date
+  language        String      @db.Text
+  ageRating       String      @db.Text
+
+  showtimes       Showtime[]
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("movies")
+}
+
+model Showtime {
+  id             String   @id @default(cuid())
+  movieId        String
+  movie          Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  date           DateTime @db.Date
+  time           String
+  screen         String   @db.Text
+  price          Int
+  ticketPrices   Json
+  availableSeats Int
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("showtimes")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String   @db.Text
+  date        DateTime @db.Date
+  time        String   @db.Text
+  description String   @db.Text
+  imageUrl    String   @db.Text
+  status      String   @db.Text // "upcoming" | "past"
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("events")
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  title     String   @db.Text
+  imageUrl  String   @db.Text
+  category  String   @db.Text // "exterior" | "interior" | "events" | "audience"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("gallery_items")
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  text      String   @db.Text
+  isActive  Boolean  @default(true)
+  type      String   @db.Text // "info" | "warning" | "success"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("announcements")
+}
+
+model CinemaSettings {
+  id           String   @id @default("singleton")
+  name         String   @db.Text
+  address      String   @db.Text
+  phone        String   @db.Text
+  email        String   @db.Text
+  openingTime  String   @db.Text
+  closingTime  String   @db.Text
+  ticketPolicy String   @db.Text
+  mapEmbedUrl  String   @db.Text
+  aboutText    String   @db.Text
+  facebookUrl  String   @db.Text
+  instagramUrl String   @db.Text
+
+  updatedAt    DateTime @updatedAt
+
+  @@map("cinema_settings")
+}
