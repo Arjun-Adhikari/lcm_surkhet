@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import type { CinemaSettings, Movie, Showtime, Event, GalleryItem } from "@/lib/store";
-
-// ─── Status mappers ───────────────────────────────────────────────────────────
 
 export function fromStatus(s: string): Movie["status"] {
   switch (s) {
@@ -11,8 +11,6 @@ export function fromStatus(s: string): Movie["status"] {
     default:             return "now-showing";
   }
 }
-
-// ─── Settings ─────────────────────────────────────────────────────────────────
 
 const DEFAULT_SETTINGS = {
   id: "singleton",
@@ -29,147 +27,194 @@ const DEFAULT_SETTINGS = {
   instagramUrl: "https://instagram.com",
 };
 
-export async function getSettings(): Promise<CinemaSettings> {
-  let s = await prisma.cinemaSettings.findFirst();
-  if (!s) s = await prisma.cinemaSettings.create({ data: DEFAULT_SETTINGS });
-  return {
-    name: s.name, address: s.address, phone: s.phone, email: s.email,
-    openingTime: s.openingTime, closingTime: s.closingTime,
-    ticketPolicy: s.ticketPolicy, mapEmbedUrl: s.mapEmbedUrl,
-    aboutText: s.aboutText, facebookUrl: s.facebookUrl, instagramUrl: s.instagramUrl,
-  };
-}
+// ─── Settings ─────────────────────────────────────────────────────────────────
+
+const _getSettings = unstable_cache(
+  async () => {
+    let s = await prisma.cinemaSettings.findFirst();
+    if (!s) s = await prisma.cinemaSettings.create({ data: DEFAULT_SETTINGS });
+    return {
+      name: s.name, address: s.address, phone: s.phone, email: s.email,
+      openingTime: s.openingTime, closingTime: s.closingTime,
+      ticketPolicy: s.ticketPolicy, mapEmbedUrl: s.mapEmbedUrl,
+      aboutText: s.aboutText, facebookUrl: s.facebookUrl, instagramUrl: s.instagramUrl,
+    };
+  },
+  ["cinema-settings"],
+  { revalidate: 3600, tags: ["settings"] }
+);
+
+export const getSettings = cache(_getSettings);
 
 // ─── Movies ───────────────────────────────────────────────────────────────────
 
-export async function getMovies(): Promise<Movie[]> {
-  const movies = await prisma.movie.findMany({ orderBy: { createdAt: "asc" } });
-  return movies.map((m) => ({
-    id: m.id,
-    title: m.title,
-    originalTitle: m.originalTitle ?? undefined,
-    director: m.director,
-    cast: m.cast,
-    durationMinutes: m.durationMinutes,
-    genre: m.genre,
-    synopsis: m.synopsis,
-    posterUrl: m.posterUrl,
-    backdropUrl: m.backdropUrl,
-    trailerUrl: m.trailerUrl,
-    status: fromStatus(m.status),
-    releaseDate: m.releaseDate.toISOString().split("T")[0],
-    language: m.language,
-    ageRating: m.ageRating,
-  }));
-}
+const _getMovies = unstable_cache(
+  async () => {
+    const movies = await prisma.movie.findMany({ orderBy: { createdAt: "asc" } });
+    return movies.map((m) => ({
+      id: m.id, title: m.title, originalTitle: m.originalTitle ?? undefined,
+      director: m.director, cast: m.cast, durationMinutes: m.durationMinutes,
+      genre: m.genre, synopsis: m.synopsis, posterUrl: m.posterUrl,
+      backdropUrl: m.backdropUrl, trailerUrl: m.trailerUrl,
+      status: fromStatus(m.status),
+      releaseDate: m.releaseDate.toISOString().split("T")[0],
+      language: m.language, ageRating: m.ageRating,
+    }));
+  },
+  ["movies"],
+  { revalidate: 3600, tags: ["movies"] }
+);
 
-export async function getMovieById(id: string): Promise<Movie | null> {
-  const m = await prisma.movie.findUnique({ where: { id } });
-  if (!m) return null;
-  return {
-    id: m.id, title: m.title, originalTitle: m.originalTitle ?? undefined,
-    director: m.director, cast: m.cast, durationMinutes: m.durationMinutes,
-    genre: m.genre, synopsis: m.synopsis, posterUrl: m.posterUrl,
-    backdropUrl: m.backdropUrl, trailerUrl: m.trailerUrl,
-    status: fromStatus(m.status),
-    releaseDate: m.releaseDate.toISOString().split("T")[0],
-    language: m.language, ageRating: m.ageRating,
-  };
-}
+export const getMovies = cache(_getMovies);
+
+const _getMovieById = unstable_cache(
+  async (id: string) => {
+    const m = await prisma.movie.findUnique({ where: { id } });
+    if (!m) return null;
+    return {
+      id: m.id, title: m.title, originalTitle: m.originalTitle ?? undefined,
+      director: m.director, cast: m.cast, durationMinutes: m.durationMinutes,
+      genre: m.genre, synopsis: m.synopsis, posterUrl: m.posterUrl,
+      backdropUrl: m.backdropUrl, trailerUrl: m.trailerUrl,
+      status: fromStatus(m.status),
+      releaseDate: m.releaseDate.toISOString().split("T")[0],
+      language: m.language, ageRating: m.ageRating,
+    };
+  },
+  ["movie-by-id"],
+  { revalidate: 3600, tags: ["movies"] }
+);
+
+export const getMovieById = cache(_getMovieById);
 
 // ─── Showtimes ────────────────────────────────────────────────────────────────
 
-export async function getShowtimesByMovieId(movieId: string): Promise<Showtime[]> {
-  const rows = await prisma.showtime.findMany({
-    where: { movieId },
-    orderBy: [{ date: "asc" }, { time: "asc" }],
-  });
-  return rows.map((s) => ({
-    id: s.id, movieId: s.movieId,
-    date: s.date.toISOString().split("T")[0],
-    time: s.time, screen: s.screen, price: s.price,
-    ticketPrices: s.ticketPrices as { type: string; price: number }[],
-    availableSeats: s.availableSeats,
-  }));
-}
+const _getShowtimesByMovieId = unstable_cache(
+  async (movieId: string) => {
+    const rows = await prisma.showtime.findMany({
+      where: { movieId },
+      orderBy: [{ date: "asc" }, { time: "asc" }],
+    });
+    return rows.map((s) => ({
+      id: s.id, movieId: s.movieId,
+      date: s.date.toISOString().split("T")[0],
+      time: s.time, screen: s.screen, price: s.price,
+      ticketPrices: s.ticketPrices as { type: string; price: number }[],
+      availableSeats: s.availableSeats,
+    }));
+  },
+  ["showtimes-by-movie"],
+  { revalidate: 3600, tags: ["showtimes"] }
+);
 
-export async function getNowShowingShowtimes(): Promise<Showtime[]> {
-  // Only fetch showtimes for now-showing movies — used on home + movies pages
-  const rows = await prisma.showtime.findMany({
-    where: { movie: { status: "NOW_SHOWING" } },
-    orderBy: { date: "asc" },
-  });
-  return rows.map((s) => ({
-    id: s.id, movieId: s.movieId,
-    date: s.date.toISOString().split("T")[0],
-    time: s.time, screen: s.screen, price: s.price,
-    ticketPrices: s.ticketPrices as { type: string; price: number }[],
-    availableSeats: s.availableSeats,
-  }));
-}
+export const getShowtimesByMovieId = cache(_getShowtimesByMovieId);
+
+const _getNowShowingShowtimes = unstable_cache(
+  async () => {
+    const rows = await prisma.showtime.findMany({
+      where: { movie: { status: "NOW_SHOWING" } },
+      orderBy: { date: "asc" },
+    });
+    return rows.map((s) => ({
+      id: s.id, movieId: s.movieId,
+      date: s.date.toISOString().split("T")[0],
+      time: s.time, screen: s.screen, price: s.price,
+      ticketPrices: s.ticketPrices as { type: string; price: number }[],
+      availableSeats: s.availableSeats,
+    }));
+  },
+  ["showtimes-now-showing"],
+  { revalidate: 3600, tags: ["showtimes"] }
+);
+
+export const getNowShowingShowtimes = cache(_getNowShowingShowtimes);
 
 // ─── Events ───────────────────────────────────────────────────────────────────
 
-export async function getUpcomingEvents(): Promise<Event[]> {
-  const rows = await prisma.event.findMany({
-    where: { status: "upcoming" },
-    orderBy: { date: "asc" },
-  });
-  return rows.map((e) => ({
-    id: e.id, title: e.title,
-    date: e.date.toISOString().split("T")[0],
-    time: e.time, description: e.description,
-    imageUrl: e.imageUrl, status: e.status as Event["status"],
-  }));
-}
-
-export async function getPastEvents(page = 1, pageSize = 3): Promise<{ events: Event[]; total: number }> {
-  const [rows, total] = await Promise.all([
-    prisma.event.findMany({
-      where: { status: "past" },
-      orderBy: { date: "desc" },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    }),
-    prisma.event.count({ where: { status: "past" } }),
-  ]);
-  return {
-    events: rows.map((e) => ({
+const _getUpcomingEvents = unstable_cache(
+  async () => {
+    const rows = await prisma.event.findMany({
+      where: { status: "upcoming" },
+      orderBy: { date: "asc" },
+    });
+    return rows.map((e) => ({
       id: e.id, title: e.title,
       date: e.date.toISOString().split("T")[0],
       time: e.time, description: e.description,
       imageUrl: e.imageUrl, status: e.status as Event["status"],
-    })),
-    total,
-  };
-}
+    }));
+  },
+  ["events-upcoming"],
+  { revalidate: 3600, tags: ["events"] }
+);
+
+export const getUpcomingEvents = cache(_getUpcomingEvents);
+
+const _getPastEvents = unstable_cache(
+  async (page: number, pageSize: number) => {
+    const [rows, total] = await Promise.all([
+      prisma.event.findMany({
+        where: { status: "past" },
+        orderBy: { date: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.event.count({ where: { status: "past" } }),
+    ]);
+    return {
+      events: rows.map((e) => ({
+        id: e.id, title: e.title,
+        date: e.date.toISOString().split("T")[0],
+        time: e.time, description: e.description,
+        imageUrl: e.imageUrl, status: e.status as Event["status"],
+      })),
+      total,
+    };
+  },
+  ["events-past"],
+  { revalidate: 3600, tags: ["events"] }
+);
+
+export const getPastEvents = cache(_getPastEvents);
 
 // ─── Gallery ──────────────────────────────────────────────────────────────────
 
-export async function getGallery(page = 1, pageSize = 6, category?: string): Promise<{ items: GalleryItem[]; total: number }> {
-  const where = category && category !== "all" ? { category } : {};
-  const [rows, total] = await Promise.all([
-    prisma.galleryItem.findMany({
-      where,
-      orderBy: { createdAt: "asc" },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    }),
-    prisma.galleryItem.count({ where }),
-  ]);
-  return {
-    items: rows.map((g) => ({
-      id: g.id, title: g.title, imageUrl: g.imageUrl,
-      category: g.category as GalleryItem["category"],
-    })),
-    total,
-  };
-}
+const _getGallery = unstable_cache(
+  async (page: number, pageSize: number, category?: string) => {
+    const where = category && category !== "all" ? { category } : {};
+    const [rows, total] = await Promise.all([
+      prisma.galleryItem.findMany({
+        where,
+        orderBy: { createdAt: "asc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.galleryItem.count({ where }),
+    ]);
+    return {
+      items: rows.map((g) => ({
+        id: g.id, title: g.title, imageUrl: g.imageUrl,
+        category: g.category as GalleryItem["category"],
+      })),
+      total,
+    };
+  },
+  ["gallery"],
+  { revalidate: 3600, tags: ["gallery"] }
+);
 
-export async function getGalleryCategories(): Promise<string[]> {
-  const items = await prisma.galleryItem.findMany({
-    select: { category: true },
-    distinct: ["category"],
-  });
-  return items.map((i) => i.category);
-}
+export const getGallery = cache(_getGallery);
+
+const _getGalleryCategories = unstable_cache(
+  async () => {
+    const items = await prisma.galleryItem.findMany({
+      select: { category: true },
+      distinct: ["category"],
+    });
+    return items.map((i) => i.category);
+  },
+  ["gallery-categories"],
+  { revalidate: 3600, tags: ["gallery"] }
+);
+
+export const getGalleryCategories = cache(_getGalleryCategories);

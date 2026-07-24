@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function toStatus(s: string) {
@@ -64,5 +65,6 @@ export async function POST(req: Request) {
       ageRating: data.ageRating,
     },
   });
+  revalidateTag("movies");
   return NextResponse.json(serializeMovie(movie), { status: 201 });
 }

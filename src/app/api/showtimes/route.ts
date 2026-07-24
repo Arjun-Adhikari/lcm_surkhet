@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function serializeShowtime(st: Awaited<ReturnType<typeof prisma.showtime.findMany>>[0]) {
@@ -32,5 +33,6 @@ export async function POST(req: Request) {
       availableSeats: data.availableSeats,
     },
   });
+  revalidateTag("showtimes");
   return NextResponse.json(serializeShowtime(showtime), { status: 201 });
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function serializeShowtime(st: Awaited<ReturnType<typeof prisma.showtime.findUniqueOrThrow>>) {
@@ -42,6 +43,7 @@ export async function PATCH(
       availableSeats: data.availableSeats,
     },
   });
+  revalidateTag("showtimes");
   return NextResponse.json(serializeShowtime(showtime));
 }
 
@@ -51,5 +53,6 @@ export async function DELETE(
 ) {
   const { id } = await params;
   await prisma.showtime.delete({ where: { id } });
+  revalidateTag("showtimes");
   return NextResponse.json(null, { status: 204 });
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function serializeGalleryItem(item: Awaited<ReturnType<typeof prisma.galleryItem.findMany>>[0]) {
@@ -56,5 +57,6 @@ export async function POST(req: Request) {
       category: data.category ?? "interior",
     },
   });
+  revalidateTag("gallery");
   return NextResponse.json(serializeGalleryItem(item), { status: 201 });
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function serializeAnnouncement(item: Awaited<ReturnType<typeof prisma.announcement.findMany>>[0]) {
@@ -24,5 +25,6 @@ export async function POST(req: Request) {
       type: data.type ?? "info",
     },
   });
+  revalidateTag("announcements");
   return NextResponse.json(serializeAnnouncement(announcement), { status: 201 });
 }

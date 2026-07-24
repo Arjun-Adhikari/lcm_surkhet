@@ -1,7 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { Clock, Play, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getMovies, getNowShowingShowtimes } from "@/lib/data";
+import { useAppStore } from "@/lib/store";
 import type { Movie, Showtime } from "@/lib/store";
 
 function MovieCard({ movie, showtimes }: { movie: Movie; showtimes: Showtime[] }) {
@@ -60,8 +62,8 @@ function MovieCard({ movie, showtimes }: { movie: Movie; showtimes: Showtime[] }
   );
 }
 
-export async function NowShowingMoviesGrid() {
-  const [movies, showtimes] = await Promise.all([getMovies(), getNowShowingShowtimes()]);
+export function NowShowingMoviesGrid() {
+  const { movies, showtimes } = useAppStore();
   const nowShowing = movies.filter((m) => m.status === "now-showing");
 
   if (nowShowing.length === 0) {
@@ -80,8 +82,8 @@ export async function NowShowingMoviesGrid() {
   );
 }
 
-export async function ComingSoonMoviesGrid() {
-  const movies = await getMovies();
+export function ComingSoonMoviesGrid() {
+  const { movies } = useAppStore();
   const comingSoon = movies.filter((m) => m.status === "coming-soon");
 
   if (comingSoon.length === 0) {

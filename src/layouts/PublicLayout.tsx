@@ -6,14 +6,14 @@ import { usePathname } from "next/navigation";
 import { Film, Calendar, Image as ImageIcon, Info, MapPin, Menu, X, Phone, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import type { CinemaSettings } from "@/lib/store";
+import { useAppStore } from "@/lib/store";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
-  settings: CinemaSettings;
 }
 
-export function PublicLayout({ children, settings }: PublicLayoutProps) {
+export function PublicLayout({ children }: PublicLayoutProps) {
+  const { settings } = useAppStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 

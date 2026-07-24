@@ -1,25 +1,35 @@
-import { Suspense } from "react";
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone, CalendarDays } from "lucide-react";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { getSettings, getMovies, getNowShowingShowtimes } from "@/lib/data";
+import { useAppStore } from "@/lib/store";
 import { HomeHero } from "@/components/home-hero";
 import { NowShowingGrid } from "@/components/now-showing-grid";
-import { HeroSkeleton, MovieGridSkeleton } from "@/components/skeletons";
 
-export default async function Home() {
-  const settings = await getSettings();
+export default function Home() {
+  const { settings, movies } = useAppStore();
+  const nowShowing = movies.filter((m) => m.status === "now-showing");
+  const heroMovie = nowShowing[0] || movies[0];
+
+  if (!heroMovie) {
+    return (
+      <PublicLayout>
+        <section className="h-[80vh] flex items-center justify-center bg-black text-white">
+          <div className="text-center">
+            <h1 className="text-4xl font-serif font-bold mb-4">Welcome to {settings.name}</h1>
+            <p className="text-zinc-400">No movies currently showing. Check back soon!</p>
+          </div>
+        </section>
+      </PublicLayout>
+    );
+  }
 
   return (
-    <PublicLayout settings={settings}>
+    <PublicLayout>
+      <HomeHero movie={heroMovie} />
 
-      {/* Dynamic: hero needs the first now-showing movie from DB */}
-      <Suspense fallback={<HeroSkeleton />}>
-        <HeroSection />
-      </Suspense>
-
-      {/* Static shell: headings, links */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="flex items-end justify-between mb-10">
@@ -32,10 +42,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          {/* Dynamic: movie cards from DB */}
-          <Suspense fallback={<MovieGridSkeleton count={4} />}>
-            <NowShowingGrid />
-          </Suspense>
+          <NowShowingGrid />
 
           <div className="mt-8 text-center sm:hidden">
             <Button variant="outline" className="w-full rounded-full" asChild>
@@ -45,7 +52,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Static: CTA banner — uses settings already fetched above */}
       <section className="py-12 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           <div className="md:col-span-2">
@@ -67,7 +73,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Fully static: cinema features section */}
       <section className="py-20 bg-zinc-950 text-white border-y border-zinc-800">
         <div className="container mx-auto px-4 text-center max-w-4xl">
           <h2 className="text-3xl md:text-5xl font-serif font-bold mb-6">Cinematic Brilliance in Surkhet</h2>
@@ -92,16 +97,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
     </PublicLayout>
   );
-}
-
-// Separate async component so Suspense can stream it independently
-async function HeroSection() {
-  const [movies, showtimes] = await Promise.all([getMovies(), getNowShowingShowtimes()]);
-  const nowShowing = movies.filter((m) => m.status === "now-showing");
-  const heroMovie = nowShowing[0] || movies[0];
-  if (!heroMovie) return null;
-  return <HomeHero movie={heroMovie} />;
 }

@@ -1,32 +1,34 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useParams } from "next/navigation";
+import { useMemo } from "react";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { getSettings, getMovieById, getShowtimesByMovieId } from "@/lib/data";
+import { useAppStore } from "@/lib/store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Calendar, Phone } from "lucide-react";
 import { MovieDetailClient } from "@/components/movie-detail-client";
 import { ShowtimesPicker } from "@/components/showtimes-picker";
 
-export const experimental_ppr = true;
+export default function MovieDetailPage() {
+  const params = useParams<{ id: string }>();
+  const { movies, showtimes: allShowtimes, settings } = useAppStore();
 
-interface Props {
-  params: Promise<{ id: string }>;
-}
+  const movie = useMemo(() => movies.find((m) => m.id === params.id), [movies, params.id]);
+  const showtimes = useMemo(() => allShowtimes.filter((s) => s.movieId === params.id), [allShowtimes, params.id]);
 
-export default async function MovieDetailPage({ params }: Props) {
-  const { id } = await params;
-
-  const [settings, movie, showtimes] = await Promise.all([
-    getSettings(),
-    getMovieById(id),
-    getShowtimesByMovieId(id),
-  ]);
-
-  if (!movie) notFound();
+  if (!movie) {
+    return (
+      <PublicLayout>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <p className="text-xl text-muted-foreground">Movie not found.</p>
+        </div>
+      </PublicLayout>
+    );
+  }
 
   return (
-    <PublicLayout settings={settings}>
-      {/* Static hero backdrop — server rendered */}
+    <PublicLayout>
       <div className="relative w-full h-[60vh] min-h-125 bg-black">
         <div className="absolute inset-0">
           <img
@@ -64,14 +66,12 @@ export default async function MovieDetailPage({ params }: Props) {
                 <span className="flex items-center"><Calendar className="w-4 h-4 mr-1" /> {new Date(movie.releaseDate).getFullYear()}</span>
               </div>
 
-              {/* Client component handles trailer dialog + scroll-to-showtimes */}
               <MovieDetailClient movie={movie} showtimes={showtimes} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Static content */}
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-10">
@@ -91,9 +91,22 @@ export default async function MovieDetailPage({ params }: Props) {
               </div>
             </section>
 
-            {/* Showtimes picker — client component for interactivity */}
             {movie.status === "now-showing" && showtimes.length > 0 && (
-              <ShowtimesSection showtimes={showtimes} phone={settings.phone} />
+              <section id="showtimes" className="scroll-mt-24">
+                <div className="flex items-center gap-3 mb-6">
+                  <Clock className="w-6 h-6 text-primary" />
+                  <h2 className="text-2xl font-serif font-bold">Showtimes</h2>
+                </div>
+                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    Call the box office to ask about availability. Payment is made at the cinema counter only.
+                  </p>
+                  <Button variant="outline" className="shrink-0" asChild>
+                    <a href={`tel:${settings.phone?.replace(/\s/g, "")}`}><Phone className="w-4 h-4 mr-2" /> Call Box Office</a>
+                  </Button>
+                </div>
+                <ShowtimesPicker showtimes={showtimes} phone={settings.phone} />
+              </section>
             )}
           </div>
 
@@ -133,26 +146,5 @@ export default async function MovieDetailPage({ params }: Props) {
         </div>
       </div>
     </PublicLayout>
-  );
-}
-
-// Showtimes section — uses proper import now
-function ShowtimesSection({ showtimes, phone }: { showtimes: Awaited<ReturnType<typeof getShowtimesByMovieId>>; phone: string }) {
-  return (
-    <section id="showtimes" className="scroll-mt-24">
-      <div className="flex items-center gap-3 mb-6">
-        <Clock className="w-6 h-6 text-primary" />
-        <h2 className="text-2xl font-serif font-bold">Showtimes</h2>
-      </div>
-      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">
-          Call the box office to ask about availability. Payment is made at the cinema counter only.
-        </p>
-        <Button variant="outline" className="shrink-0" asChild>
-          <a href={`tel:${phone.replace(/\s/g, "")}`}><Phone className="w-4 h-4 mr-2" /> Call Box Office</a>
-        </Button>
-      </div>
-      <ShowtimesPicker showtimes={showtimes} phone={phone} />
-    </section>
   );
 }

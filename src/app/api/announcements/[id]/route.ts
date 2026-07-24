@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function serializeAnnouncement(item: Awaited<ReturnType<typeof prisma.announcement.findUniqueOrThrow>>) {
@@ -25,6 +26,7 @@ export async function PATCH(
     where: { id },
     data: { text: data.text, isActive: data.isActive, type: data.type },
   });
+  revalidateTag("announcements");
   return NextResponse.json(serializeAnnouncement(a));
 }
 
@@ -34,5 +36,6 @@ export async function DELETE(
 ) {
   const { id } = await params;
   await prisma.announcement.delete({ where: { id } });
+  revalidateTag("announcements");
   return NextResponse.json(null, { status: 204 });
 }

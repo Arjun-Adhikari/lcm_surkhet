@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function fromStatus(s: string) {
@@ -74,6 +75,7 @@ export async function PATCH(
       ageRating: data.ageRating,
     },
   });
+  revalidateTag("movies");
   return NextResponse.json(serializeMovie(movie));
 }
 
@@ -83,5 +85,6 @@ export async function DELETE(
 ) {
   const { id } = await params;
   await prisma.movie.delete({ where: { id } });
+  revalidateTag("movies");
   return NextResponse.json(null, { status: 204 });
 }

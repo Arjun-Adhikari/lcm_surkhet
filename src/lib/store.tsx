@@ -137,7 +137,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const events = eventsQuery.data ?? [];
   const gallery = galleryQuery.data ?? [];
   const announcements = announcementsQuery.data ?? [];
-  const settings = settingsQuery.data ?? ({} as CinemaSettings);
+  const settings = settingsQuery.data ?? ({
+    name: "Laxmi Chalchitra Mandir", address: "", phone: "", email: "",
+    openingTime: "", closingTime: "", ticketPolicy: "", mapEmbedUrl: "",
+    aboutText: "", facebookUrl: "", instagramUrl: "",
+  } as CinemaSettings);
 
   const inv = (key: string) => () => queryClient.invalidateQueries({ queryKey: [key] });
 

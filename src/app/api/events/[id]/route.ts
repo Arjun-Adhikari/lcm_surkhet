@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function serializeEvent(e: Awaited<ReturnType<typeof prisma.event.findUniqueOrThrow>>) {
@@ -40,6 +41,7 @@ export async function PATCH(
       description: data.description,
     },
   });
+  revalidateTag("events");
   return NextResponse.json(serializeEvent(event));
 }
 
@@ -49,5 +51,6 @@ export async function DELETE(
 ) {
   const { id } = await params;
   await prisma.event.delete({ where: { id } });
+  revalidateTag("events");
   return NextResponse.json(null, { status: 204 });
 }

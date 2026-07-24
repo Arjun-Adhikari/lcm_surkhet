@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 const DEFAULT_SETTINGS = {
@@ -70,5 +71,6 @@ export async function PATCH(req: Request) {
       instagramUrl: data.instagramUrl,
     },
   });
+  revalidateTag("settings");
   return NextResponse.json(serializeSettings(updated));
 }

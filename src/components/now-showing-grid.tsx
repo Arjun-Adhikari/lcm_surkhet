@@ -1,9 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Clock } from "lucide-react";
-import { getMovies, getNowShowingShowtimes } from "@/lib/data";
+import { useAppStore } from "@/lib/store";
 
-export async function NowShowingGrid() {
-  const [movies, showtimes] = await Promise.all([getMovies(), getNowShowingShowtimes()]);
+export function NowShowingGrid() {
+  const { movies, showtimes } = useAppStore();
   const nowShowing = movies.filter((m) => m.status === "now-showing").slice(0, 4);
 
   if (nowShowing.length === 0) return null;

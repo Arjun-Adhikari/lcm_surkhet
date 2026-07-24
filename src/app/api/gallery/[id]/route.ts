@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 export async function DELETE(
@@ -7,5 +8,6 @@ export async function DELETE(
 ) {
   const { id } = await params;
   await prisma.galleryItem.delete({ where: { id } });
+  revalidateTag("gallery");
   return NextResponse.json(null, { status: 204 });
 }

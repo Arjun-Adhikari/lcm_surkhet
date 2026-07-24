@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 function serializeEvent(e: Awaited<ReturnType<typeof prisma.event.findMany>>[0]) {
@@ -30,5 +31,6 @@ export async function POST(req: Request) {
       description: data.description,
     },
   });
+  revalidateTag("events");
   return NextResponse.json(serializeEvent(event), { status: 201 });
 }
