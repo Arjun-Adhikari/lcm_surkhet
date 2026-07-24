@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Film, Calendar, Image as ImageIcon, Info, MapPin, Menu, X, Phone, Clock } from "lucide-react";
@@ -13,9 +13,21 @@ interface PublicLayoutProps {
 }
 
 export function PublicLayout({ children }: PublicLayoutProps) {
-  const { settings } = useAppStore();
+  const { settings, announcements } = useAppStore();
+  const activeAnnouncements = announcements.filter((a) => a.isActive);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [announcementIndex, setAnnouncementIndex] = useState(0);
   const pathname = usePathname();
+
+  const nextAnnouncement = useCallback(() => {
+    setAnnouncementIndex((i) => (i + 1) % Math.max(activeAnnouncements.length, 1));
+  }, [activeAnnouncements.length]);
+
+  useEffect(() => {
+    if (activeAnnouncements.length < 2) return;
+    const id = setInterval(nextAnnouncement, 4000);
+    return () => clearInterval(id);
+  }, [activeAnnouncements.length, nextAnnouncement]);
 
   const navLinks = [
     { href: "/", label: "Home", icon: Film },
@@ -104,6 +116,18 @@ export function PublicLayout({ children }: PublicLayoutProps) {
               </Button>
             </div>
           </nav>
+        </div>
+      )}
+
+      {activeAnnouncements.length > 0 && (
+        <div className="bg-red-600 text-white text-center text-sm font-medium overflow-hidden relative h-9">
+          <div
+            className="absolute inset-0 flex items-center justify-center animate-[fadeIn_0.5s_ease-in-out]"
+            key={activeAnnouncements[announcementIndex].id}
+          >
+            {activeAnnouncements[announcementIndex].text}
+          </div>
+          <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}`}</style>
         </div>
       )}
 

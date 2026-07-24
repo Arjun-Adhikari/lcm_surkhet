@@ -35,7 +35,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  await prisma.announcement.delete({ where: { id } });
+  await prisma.announcement.deleteMany({ where: { id } });
   revalidateTag("announcements");
-  return NextResponse.json(null, { status: 204 });
+  return new NextResponse(null, { status: 204 });
 }

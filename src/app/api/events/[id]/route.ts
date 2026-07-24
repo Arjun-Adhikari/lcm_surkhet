@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { deleteImageByUrl } from "@/lib/cloudinary";
 
 function serializeEvent(e: Awaited<ReturnType<typeof prisma.event.findUniqueOrThrow>>) {
   return {
@@ -50,7 +51,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  await prisma.event.delete({ where: { id } });
+  const event = await prisma.event.findUnique({ where: { id } });
+  if (event) await deleteImageByUrl(event.imageUrl);
+  await prisma.event.deleteMany({ where: { id } });
   revalidateTag("events");
-  return NextResponse.json(null, { status: 204 });
+  return new NextResponse(null, { status: 204 });
 }

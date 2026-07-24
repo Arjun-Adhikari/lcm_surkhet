@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { deleteImageByUrl } from "@/lib/cloudinary";
 
 function fromStatus(s: string) {
   switch (s) {
@@ -84,7 +85,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  await prisma.movie.delete({ where: { id } });
+  const movie = await prisma.movie.findUnique({ where: { id } });
+  if (movie) {
+    await Promise.all([deleteImageByUrl(movie.posterUrl), deleteImageByUrl(movie.backdropUrl)]);
+  }
+  await prisma.movie.deleteMany({ where: { id } });
   revalidateTag("movies");
-  return NextResponse.json(null, { status: 204 });
+  return new NextResponse(null, { status: 204 });
 }

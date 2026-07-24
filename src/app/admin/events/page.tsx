@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { FileUpload } from "@/components/FileUpload";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 
 export default function EventsAdmin() {
@@ -41,7 +42,7 @@ export default function EventsAdmin() {
   const EventForm = ({ event }: { event?: Event | null }) => (
     <form onSubmit={handleSave} className="space-y-4">
       <div className="space-y-2"><Label>Title</Label><Input name="title" defaultValue={event?.title} required /></div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2"><Label>Date</Label><Input name="date" type="date" defaultValue={event?.date} required /></div>
         <div className="space-y-2"><Label>Time</Label><Input name="time" type="time" defaultValue={event?.time} required /></div>
         <div className="space-y-2">
@@ -51,7 +52,7 @@ export default function EventsAdmin() {
             <option value="past">Past</option>
           </select>
         </div>
-        <div className="space-y-2"><Label>Image URL</Label><Input name="imageUrl" type="url" defaultValue={event?.imageUrl} required /></div>
+        <div className="space-y-2"><Label>Image</Label><FileUpload name="imageUrl" folder="events" defaultValue={event?.imageUrl} /></div>
       </div>
       <div className="space-y-2"><Label>Description</Label><Textarea name="description" defaultValue={event?.description} rows={4} required /></div>
       <DialogFooter>
@@ -63,18 +64,19 @@ export default function EventsAdmin() {
 
   return (
     <AdminLayout>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Events Management</h2>
           <p className="text-muted-foreground">Manage cinema events, premieres, and festivals.</p>
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-2" /> Add Event</Button></DialogTrigger>
-          <DialogContent className="max-w-2xl"><DialogHeader><DialogTitle>Add New Event</DialogTitle></DialogHeader><EventForm /></DialogContent>
+          <DialogTrigger asChild><Button className="w-full sm:w-auto"><Plus className="w-4 h-4 mr-2" /> Add Event</Button></DialogTrigger>
+          <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Add New Event</DialogTitle></DialogHeader><EventForm /></DialogContent>
         </Dialog>
       </div>
 
       <div className="bg-card border rounded-lg shadow-sm">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -106,7 +108,7 @@ export default function EventsAdmin() {
                       <DialogTrigger asChild>
                         <Button variant="ghost" size="icon" onClick={() => setEditingEvent(event)}><Edit2 className="w-4 h-4" /></Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl"><DialogHeader><DialogTitle>Edit Event</DialogTitle></DialogHeader><EventForm event={event} /></DialogContent>
+                      <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Edit Event</DialogTitle></DialogHeader><EventForm event={event} /></DialogContent>
                     </Dialog>
                     <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { if (window.confirm("Delete this event?")) deleteEvent(event.id); }}>
                       <Trash2 className="w-4 h-4" />
@@ -120,6 +122,7 @@ export default function EventsAdmin() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </AdminLayout>
   );

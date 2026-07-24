@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { FileUpload } from "@/components/FileUpload";
 import { Plus, Edit2, Trash2, Search } from "lucide-react";
 
 export default function MoviesAdmin() {
@@ -52,7 +53,7 @@ export default function MoviesAdmin() {
 
   const MovieForm = ({ movie }: { movie?: Movie | null }) => (
     <form onSubmit={handleSave} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Title</Label>
           <Input name="title" defaultValue={movie?.title} required />
@@ -94,13 +95,15 @@ export default function MoviesAdmin() {
         <Label>Cast (comma separated)</Label>
         <Input name="cast" defaultValue={movie?.cast.join(", ")} required />
       </div>
-      <div className="space-y-2">
-        <Label>Poster URL</Label>
-        <Input name="posterUrl" type="url" defaultValue={movie?.posterUrl} required />
-      </div>
-      <div className="space-y-2">
-        <Label>Backdrop URL</Label>
-        <Input name="backdropUrl" type="url" defaultValue={movie?.backdropUrl} required />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Poster</Label>
+          <FileUpload name="posterUrl" folder="movies" defaultValue={movie?.posterUrl} />
+        </div>
+        <div className="space-y-2">
+          <Label>Backdrop</Label>
+          <FileUpload name="backdropUrl" folder="movies" defaultValue={movie?.backdropUrl} />
+        </div>
       </div>
       <div className="space-y-2">
         <Label>Trailer URL (YouTube)</Label>
@@ -119,16 +122,16 @@ export default function MoviesAdmin() {
 
   return (
     <AdminLayout>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Movies Management</h2>
           <p className="text-muted-foreground">Manage your cinema's movie catalog.</p>
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="w-4 h-4 mr-2" /> Add Movie</Button>
+            <Button className="w-full sm:w-auto"><Plus className="w-4 h-4 mr-2" /> Add Movie</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Add New Movie</DialogTitle></DialogHeader>
             <MovieForm />
           </DialogContent>
@@ -136,13 +139,14 @@ export default function MoviesAdmin() {
       </div>
 
       <div className="bg-card border rounded-lg shadow-sm">
-        <div className="p-4 border-b flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
+        <div className="p-4 border-b flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="relative w-full sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input placeholder="Search movies..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9" />
           </div>
         </div>
 
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -178,7 +182,7 @@ export default function MoviesAdmin() {
                       <DialogTrigger asChild>
                         <Button variant="ghost" size="icon" onClick={() => setEditingMovie(movie)}><Edit2 className="w-4 h-4" /></Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader><DialogTitle>Edit Movie: {movie.title}</DialogTitle></DialogHeader>
                         <MovieForm movie={movie} />
                       </DialogContent>
@@ -195,6 +199,7 @@ export default function MoviesAdmin() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </AdminLayout>
   );

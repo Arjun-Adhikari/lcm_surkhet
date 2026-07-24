@@ -52,7 +52,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  await prisma.showtime.delete({ where: { id } });
+  await prisma.showtime.deleteMany({ where: { id } });
   revalidateTag("showtimes");
-  return NextResponse.json(null, { status: 204 });
+  return new NextResponse(null, { status: 204 });
 }

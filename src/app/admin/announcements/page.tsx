@@ -63,18 +63,19 @@ export default function AnnouncementsAdmin() {
 
   return (
     <AdminLayout>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Announcements</h2>
           <p className="text-muted-foreground">Manage scrolling ticker announcements.</p>
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-2" /> Add Announcement</Button></DialogTrigger>
+          <DialogTrigger asChild><Button className="w-full sm:w-auto"><Plus className="w-4 h-4 mr-2" /> Add Announcement</Button></DialogTrigger>
           <DialogContent><DialogHeader><DialogTitle>Add New Announcement</DialogTitle></DialogHeader><AnnouncementForm /></DialogContent>
         </Dialog>
       </div>
 
       <div className="bg-card border rounded-lg shadow-sm">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -116,6 +117,7 @@ export default function AnnouncementsAdmin() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </AdminLayout>
   );

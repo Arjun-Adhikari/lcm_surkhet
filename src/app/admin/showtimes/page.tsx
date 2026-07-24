@@ -55,7 +55,7 @@ export default function ShowtimesAdmin() {
           ))}
         </select>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2"><Label>Date</Label><Input name="date" type="date" defaultValue={showtime?.date} required /></div>
         <div className="space-y-2"><Label>Time</Label><Input name="time" type="time" defaultValue={showtime?.time} required /></div>
         <div className="space-y-2">
@@ -71,7 +71,7 @@ export default function ShowtimesAdmin() {
       </div>
       <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
         <Label className="text-base">Ticket Prices</Label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="space-y-2"><Label>General (Rs.)</Label><Input name="generalPrice" type="number" min="0" defaultValue={showtime?.ticketPrices?.find((t) => t.type === "General")?.price || 300} /></div>
           <div className="space-y-2"><Label>Student (Rs.)</Label><Input name="studentPrice" type="number" min="0" defaultValue={showtime?.ticketPrices?.find((t) => t.type === "Student")?.price || 250} /></div>
           <div className="space-y-2"><Label>Child (Rs.)</Label><Input name="childPrice" type="number" min="0" defaultValue={showtime?.ticketPrices?.find((t) => t.type === "Child")?.price || 200} /></div>
@@ -86,18 +86,19 @@ export default function ShowtimesAdmin() {
 
   return (
     <AdminLayout>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Showtimes Management</h2>
           <p className="text-muted-foreground">Schedule movie screenings across screens.</p>
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-2" /> Add Showtime</Button></DialogTrigger>
-          <DialogContent><DialogHeader><DialogTitle>Add New Showtime</DialogTitle></DialogHeader><ShowtimeForm /></DialogContent>
+          <DialogTrigger asChild><Button className="w-full sm:w-auto"><Plus className="w-4 h-4 mr-2" /> Add Showtime</Button></DialogTrigger>
+          <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Add New Showtime</DialogTitle></DialogHeader><ShowtimeForm /></DialogContent>
         </Dialog>
       </div>
 
       <div className="bg-card border rounded-lg shadow-sm">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -134,7 +135,7 @@ export default function ShowtimesAdmin() {
                         <DialogTrigger asChild>
                           <Button variant="ghost" size="icon" onClick={() => setEditingShowtime(showtime)}><Edit2 className="w-4 h-4" /></Button>
                         </DialogTrigger>
-                        <DialogContent><DialogHeader><DialogTitle>Edit Showtime</DialogTitle></DialogHeader><ShowtimeForm showtime={showtime} /></DialogContent>
+                        <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Edit Showtime</DialogTitle></DialogHeader><ShowtimeForm showtime={showtime} /></DialogContent>
                       </Dialog>
                       <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { if (window.confirm("Delete this showtime?")) deleteShowtime(showtime.id); }}>
                         <Trash2 className="w-4 h-4" />
@@ -149,6 +150,7 @@ export default function ShowtimesAdmin() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </AdminLayout>
   );

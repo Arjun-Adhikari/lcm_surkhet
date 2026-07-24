@@ -108,6 +108,7 @@ interface AppContextType {
   deleteEvent: (id: string) => Promise<void>;
 
   addGalleryItem: (g: Omit<GalleryItem, "id">) => Promise<void>;
+  updateGalleryItem: (id: string, g: Partial<GalleryItem>) => Promise<void>;
   deleteGalleryItem: (id: string) => Promise<void>;
 
   addAnnouncement: (a: Omit<Announcement, "id">) => Promise<void>;
@@ -143,28 +144,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     aboutText: "", facebookUrl: "", instagramUrl: "",
   } as CinemaSettings);
 
-  const inv = (key: string) => () => queryClient.invalidateQueries({ queryKey: [key] });
+  const ref = (key: string) => () => { queryClient.invalidateQueries({ queryKey: [key] }); };
 
-  const addMovieMutation = useMutation({ mutationFn: (m: Omit<Movie, "id">) => fetchJson<Movie>(`${API_BASE}/movies`, { method: "POST", body: JSON.stringify(m) }), onSuccess: inv("movies") });
-  const updateMovieMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<Movie>) => fetchJson<Movie>(`${API_BASE}/movies/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSuccess: inv("movies") });
-  const deleteMovieMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/movies/${id}`, { method: "DELETE" }), onSuccess: inv("movies") });
+  const addMovieMutation = useMutation({ mutationFn: (m: Omit<Movie, "id">) => fetchJson<Movie>(`${API_BASE}/movies`, { method: "POST", body: JSON.stringify(m) }), onSettled: ref("movies") });
+  const updateMovieMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<Movie>) => fetchJson<Movie>(`${API_BASE}/movies/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSettled: ref("movies") });
+  const deleteMovieMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/movies/${id}`, { method: "DELETE" }), onSettled: ref("movies") });
 
-  const addShowtimeMutation = useMutation({ mutationFn: (s: Omit<Showtime, "id">) => fetchJson<Showtime>(`${API_BASE}/showtimes`, { method: "POST", body: JSON.stringify(s) }), onSuccess: inv("showtimes") });
-  const updateShowtimeMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<Showtime>) => fetchJson<Showtime>(`${API_BASE}/showtimes/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSuccess: inv("showtimes") });
-  const deleteShowtimeMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/showtimes/${id}`, { method: "DELETE" }), onSuccess: inv("showtimes") });
+  const addShowtimeMutation = useMutation({ mutationFn: (s: Omit<Showtime, "id">) => fetchJson<Showtime>(`${API_BASE}/showtimes`, { method: "POST", body: JSON.stringify(s) }), onSettled: ref("showtimes") });
+  const updateShowtimeMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<Showtime>) => fetchJson<Showtime>(`${API_BASE}/showtimes/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSettled: ref("showtimes") });
+  const deleteShowtimeMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/showtimes/${id}`, { method: "DELETE" }), onSettled: ref("showtimes") });
 
-  const addEventMutation = useMutation({ mutationFn: (e: Omit<Event, "id">) => fetchJson<Event>(`${API_BASE}/events`, { method: "POST", body: JSON.stringify(e) }), onSuccess: inv("events") });
-  const updateEventMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<Event>) => fetchJson<Event>(`${API_BASE}/events/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSuccess: inv("events") });
-  const deleteEventMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/events/${id}`, { method: "DELETE" }), onSuccess: inv("events") });
+  const addEventMutation = useMutation({ mutationFn: (e: Omit<Event, "id">) => fetchJson<Event>(`${API_BASE}/events`, { method: "POST", body: JSON.stringify(e) }), onSettled: ref("events") });
+  const updateEventMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<Event>) => fetchJson<Event>(`${API_BASE}/events/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSettled: ref("events") });
+  const deleteEventMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/events/${id}`, { method: "DELETE" }), onSettled: ref("events") });
 
-  const addGalleryItemMutation = useMutation({ mutationFn: (g: Omit<GalleryItem, "id">) => fetchJson<GalleryItem>(`${API_BASE}/gallery`, { method: "POST", body: JSON.stringify(g) }), onSuccess: inv("gallery") });
-  const deleteGalleryItemMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/gallery/${id}`, { method: "DELETE" }), onSuccess: inv("gallery") });
+  const addGalleryItemMutation = useMutation({ mutationFn: (g: Omit<GalleryItem, "id">) => fetchJson<GalleryItem>(`${API_BASE}/gallery`, { method: "POST", body: JSON.stringify(g) }), onSettled: ref("gallery") });
+  const updateGalleryItemMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<GalleryItem>) => fetchJson<GalleryItem>(`${API_BASE}/gallery/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSettled: ref("gallery") });
+  const deleteGalleryItemMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/gallery/${id}`, { method: "DELETE" }), onSettled: ref("gallery") });
 
-  const addAnnouncementMutation = useMutation({ mutationFn: (a: Omit<Announcement, "id">) => fetchJson<Announcement>(`${API_BASE}/announcements`, { method: "POST", body: JSON.stringify(a) }), onSuccess: inv("announcements") });
-  const updateAnnouncementMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<Announcement>) => fetchJson<Announcement>(`${API_BASE}/announcements/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSuccess: inv("announcements") });
-  const deleteAnnouncementMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/announcements/${id}`, { method: "DELETE" }), onSuccess: inv("announcements") });
+  const addAnnouncementMutation = useMutation({ mutationFn: (a: Omit<Announcement, "id">) => fetchJson<Announcement>(`${API_BASE}/announcements`, { method: "POST", body: JSON.stringify(a) }), onSettled: ref("announcements") });
+  const updateAnnouncementMutation = useMutation({ mutationFn: ({ id, ...patch }: { id: string } & Partial<Announcement>) => fetchJson<Announcement>(`${API_BASE}/announcements/${id}`, { method: "PATCH", body: JSON.stringify(patch) }), onSettled: ref("announcements") });
+  const deleteAnnouncementMutation = useMutation({ mutationFn: (id: string) => fetchJson<void>(`${API_BASE}/announcements/${id}`, { method: "DELETE" }), onSettled: ref("announcements") });
 
-  const updateSettingsMutation = useMutation({ mutationFn: (s: Partial<CinemaSettings>) => fetchJson<CinemaSettings>(`${API_BASE}/settings`, { method: "PATCH", body: JSON.stringify(s) }), onSuccess: inv("settings") });
+  const updateSettingsMutation = useMutation({ mutationFn: (s: Partial<CinemaSettings>) => fetchJson<CinemaSettings>(`${API_BASE}/settings`, { method: "PATCH", body: JSON.stringify(s) }), onSettled: ref("settings") });
 
   const value: AppContextType = {
     movies, showtimes, events, gallery, announcements, settings,
@@ -178,6 +180,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     updateEvent: (id, e) => updateEventMutation.mutateAsync({ id, ...e }) as unknown as Promise<void>,
     deleteEvent: (id) => deleteEventMutation.mutateAsync(id) as unknown as Promise<void>,
     addGalleryItem: (g) => addGalleryItemMutation.mutateAsync(g) as unknown as Promise<void>,
+    updateGalleryItem: (id, g) => updateGalleryItemMutation.mutateAsync({ id, ...g }) as unknown as Promise<void>,
     deleteGalleryItem: (id) => deleteGalleryItemMutation.mutateAsync(id) as unknown as Promise<void>,
     addAnnouncement: (a) => addAnnouncementMutation.mutateAsync(a) as unknown as Promise<void>,
     updateAnnouncement: (id, a) => updateAnnouncementMutation.mutateAsync({ id, ...a }) as unknown as Promise<void>,
