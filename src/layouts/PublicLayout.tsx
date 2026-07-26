@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Film, Calendar, Image as ImageIcon, Info, MapPin, Menu, X, Phone, Clock } from "lucide-react";
+import { Film, Calendar, Image as ImageIcon, Info, MapPin, Menu, X, Phone, Clock, LogIn } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAppStore } from "@/lib/store";
 
@@ -73,6 +73,9 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           </nav>
 
           <div className="flex items-center gap-1">
+            <Link href="/admin/login" className="p-2 text-muted-foreground hover:text-primary transition-colors" title="Admin">
+              <LogIn className="w-5 h-5" />
+            </Link>
             <ThemeToggle />
             <button
               className="md:hidden p-2 text-foreground"
