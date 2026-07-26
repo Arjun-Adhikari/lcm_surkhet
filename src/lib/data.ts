@@ -51,7 +51,7 @@ export const getSettings = cache(_getSettings);
 const _getMovies = unstable_cache(
   async () => {
     const movies = await prisma.movie.findMany({ orderBy: { createdAt: "asc" } });
-    return movies.map((m) => ({
+    return movies.map((m: any) => ({
       id: m.id, title: m.title, originalTitle: m.originalTitle ?? undefined,
       director: m.director, cast: m.cast, durationMinutes: m.durationMinutes,
       genre: m.genre, synopsis: m.synopsis, posterUrl: m.posterUrl,
@@ -95,7 +95,7 @@ const _getShowtimesByMovieId = unstable_cache(
       where: { movieId },
       orderBy: [{ date: "asc" }, { time: "asc" }],
     });
-    return rows.map((s) => ({
+    return rows.map((s: any) => ({
       id: s.id, movieId: s.movieId,
       date: s.date.toISOString().split("T")[0],
       time: s.time, screen: s.screen, price: s.price,
@@ -115,7 +115,7 @@ const _getNowShowingShowtimes = unstable_cache(
       where: { movie: { status: "NOW_SHOWING" } },
       orderBy: { date: "asc" },
     });
-    return rows.map((s) => ({
+    return rows.map((s: any) => ({
       id: s.id, movieId: s.movieId,
       date: s.date.toISOString().split("T")[0],
       time: s.time, screen: s.screen, price: s.price,
@@ -137,7 +137,7 @@ const _getUpcomingEvents = unstable_cache(
       where: { status: "upcoming" },
       orderBy: { date: "asc" },
     });
-    return rows.map((e) => ({
+    return rows.map((e: any) => ({
       id: e.id, title: e.title,
       date: e.date.toISOString().split("T")[0],
       time: e.time, description: e.description,
@@ -162,7 +162,7 @@ const _getPastEvents = unstable_cache(
       prisma.event.count({ where: { status: "past" } }),
     ]);
     return {
-      events: rows.map((e) => ({
+      events: rows.map((e: any) => ({
         id: e.id, title: e.title,
         date: e.date.toISOString().split("T")[0],
         time: e.time, description: e.description,
@@ -192,7 +192,7 @@ const _getGallery = unstable_cache(
       prisma.galleryItem.count({ where }),
     ]);
     return {
-      items: rows.map((g) => ({
+      items: rows.map((g: any) => ({
         id: g.id, title: g.title, imageUrl: g.imageUrl,
         category: g.category as GalleryItem["category"],
       })),
@@ -211,7 +211,7 @@ const _getGalleryCategories = unstable_cache(
       select: { category: true },
       distinct: ["category"],
     });
-    return items.map((i) => i.category);
+    return items.map((i: any) => i.category);
   },
   ["gallery-categories"],
   { revalidate: 3600, tags: ["gallery"] }
