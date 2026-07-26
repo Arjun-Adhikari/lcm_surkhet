@@ -46,9 +46,11 @@ export default function MoviesAdmin() {
       cast: (fd.get("cast") as string).split(",").map((s) => s.trim()),
     };
     if (editingMovie) {
+      if (!window.confirm("Save changes to this movie?")) return;
       await updateMovie(editingMovie.id, movieData);
       setEditingMovie(null);
     } else {
+      if (!window.confirm("Add this new movie?")) return;
       await addMovie(movieData);
       setIsAddOpen(false);
     }

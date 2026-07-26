@@ -26,9 +26,11 @@ export default function AnnouncementsAdmin() {
       isActive: fd.get("isActive") === "true",
     };
     if (editingAnnouncement) {
+      if (!window.confirm("Save changes to this announcement?")) return;
       await updateAnnouncement(editingAnnouncement.id, data);
       setEditingAnnouncement(null);
     } else {
+      if (!window.confirm("Add this new announcement?")) return;
       await addAnnouncement(data);
       setIsAddOpen(false);
     }

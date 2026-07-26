@@ -33,9 +33,11 @@ export default function ShowtimesAdmin() {
       availableSeats: Number(fd.get("availableSeats")),
     };
     if (editingShowtime) {
+      if (!window.confirm("Save changes to this showtime?")) return;
       await updateShowtime(editingShowtime.id, showtimeData);
       setEditingShowtime(null);
     } else {
+      if (!window.confirm("Add this new showtime?")) return;
       await addShowtime(showtimeData);
       setIsAddOpen(false);
     }

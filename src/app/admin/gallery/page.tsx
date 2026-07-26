@@ -19,6 +19,7 @@ export default function GalleryAdmin() {
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!window.confirm("Add this photo to the gallery?")) return;
     const fd = new FormData(e.currentTarget);
     await addGalleryItem({
       title: fd.get("title") as string,
@@ -31,6 +32,7 @@ export default function GalleryAdmin() {
   const handleEditSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingItem) return;
+    if (!window.confirm("Save changes to this photo?")) return;
     const fd = new FormData(e.currentTarget);
     await updateGalleryItem(editingItem.id, {
       title: fd.get("title") as string,

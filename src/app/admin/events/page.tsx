@@ -31,9 +31,11 @@ export default function EventsAdmin() {
       description: fd.get("description") as string,
     };
     if (editingEvent) {
+      if (!window.confirm("Save changes to this event?")) return;
       await updateEvent(editingEvent.id, eventData);
       setEditingEvent(null);
     } else {
+      if (!window.confirm("Add this new event?")) return;
       await addEvent(eventData);
       setIsAddOpen(false);
     }

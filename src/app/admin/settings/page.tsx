@@ -14,6 +14,7 @@ export default function SettingsAdmin() {
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!window.confirm("Save settings changes?")) return;
     const fd = new FormData(e.currentTarget);
     await updateSettings({
       name: fd.get("name") as string,
