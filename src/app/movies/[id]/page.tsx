@@ -12,10 +12,23 @@ import { ShowtimesPicker } from "@/components/showtimes-picker";
 
 export default function MovieDetailPage() {
   const params = useParams<{ id: string }>();
-  const { movies, showtimes: allShowtimes, settings } = useAppStore();
+  const { movies, moviesLoading, showtimes: allShowtimes, settings } = useAppStore();
 
   const movie = useMemo(() => movies.find((m) => m.id === params.id), [movies, params.id]);
   const showtimes = useMemo(() => allShowtimes.filter((s) => s.movieId === params.id), [allShowtimes, params.id]);
+
+  if (moviesLoading) {
+    return (
+      <PublicLayout>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-muted-foreground">Loading movie details...</p>
+          </div>
+        </div>
+      </PublicLayout>
+    );
+  }
 
   if (!movie) {
     return (

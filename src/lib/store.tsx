@@ -89,6 +89,7 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 
 interface AppContextType {
   movies: Movie[];
+  moviesLoading: boolean;
   showtimes: Showtime[];
   events: Event[];
   gallery: GalleryItem[];
@@ -169,7 +170,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const updateSettingsMutation = useMutation({ mutationFn: (s: Partial<CinemaSettings>) => fetchJson<CinemaSettings>(`${API_BASE}/settings`, { method: "PATCH", body: JSON.stringify(s) }), onSettled: ref("settings") });
 
   const value: AppContextType = {
-    movies, showtimes, events, gallery, announcements, settings,
+    movies, moviesLoading: moviesQuery.isLoading, showtimes, events, gallery, announcements, settings,
     addMovie: (m) => addMovieMutation.mutateAsync(m) as unknown as Promise<void>,
     updateMovie: (id, m) => updateMovieMutation.mutateAsync({ id, ...m }) as unknown as Promise<void>,
     deleteMovie: (id) => deleteMovieMutation.mutateAsync(id) as unknown as Promise<void>,
