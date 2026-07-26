@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="6" fill="#e11d48"/>
+  <path d="M6 10h20l-3 16H9L6 10z" fill="white" opacity="0.9"/>
+  <rect x="6" y="6" width="20" height="5" rx="1" fill="white"/>
+  <text x="16" y="19" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#e11d48" text-anchor="middle">LCM</text>
+</svg>
