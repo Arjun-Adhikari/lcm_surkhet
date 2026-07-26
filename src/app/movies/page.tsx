@@ -13,7 +13,7 @@ function MoviesContent() {
     <PublicLayout>
       <div className="bg-zinc-100 dark:bg-zinc-900 border-b">
         <div className="container mx-auto px-4 py-12 md:py-16">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Movies</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">Movies</h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
             Discover what&apos;s playing at Laxmi Chalchitra Mandir. From blockbuster hits to local
             favorites, we&apos;ve got your entertainment covered.
