@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -8,28 +8,37 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Save } from "lucide-react";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function SettingsAdmin() {
   const { settings, updateSettings } = useAppStore();
+  const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!window.confirm("Save settings changes?")) return;
     const fd = new FormData(e.currentTarget);
-    await updateSettings({
-      name: fd.get("name") as string,
-      address: fd.get("address") as string,
-      phone: fd.get("phone") as string,
-      email: fd.get("email") as string,
-      openingTime: fd.get("openingTime") as string,
-      closingTime: fd.get("closingTime") as string,
-      ticketPolicy: fd.get("ticketPolicy") as string,
-      mapEmbedUrl: fd.get("mapEmbedUrl") as string,
-      aboutText: fd.get("aboutText") as string,
-      facebookUrl: fd.get("facebookUrl") as string,
-      instagramUrl: fd.get("instagramUrl") as string,
+    setConfirm({
+      title: "Save Settings",
+      description: "Save settings changes?",
+      onConfirm: async () => {
+        await updateSettings({
+          name: fd.get("name") as string,
+          address: fd.get("address") as string,
+          phone: fd.get("phone") as string,
+          email: fd.get("email") as string,
+          openingTime: fd.get("openingTime") as string,
+          closingTime: fd.get("closingTime") as string,
+          ticketPolicy: fd.get("ticketPolicy") as string,
+          mapEmbedUrl: fd.get("mapEmbedUrl") as string,
+          aboutText: fd.get("aboutText") as string,
+          facebookUrl: fd.get("facebookUrl") as string,
+          instagramUrl: fd.get("instagramUrl") as string,
+        });
+        alert("Settings saved successfully!");
+        toast.success("Settings saved");
+      },
     });
-    alert("Settings saved successfully!");
   };
 
   return (
@@ -86,6 +95,7 @@ export default function SettingsAdmin() {
           <Button type="submit" size="lg"><Save className="w-4 h-4 mr-2" /> Save Settings</Button>
         </div>
       </form>
+      {confirm && <ConfirmDialog open={!!confirm} onOpenChange={() => setConfirm(null)} title={confirm.title} description={confirm.description} onConfirm={confirm.onConfirm} />}
     </AdminLayout>
   );
 }

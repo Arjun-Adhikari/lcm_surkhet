@@ -11,11 +11,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function AnnouncementsAdmin() {
   const { announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement } = useAppStore();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
+  const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,13 +29,25 @@ export default function AnnouncementsAdmin() {
       isActive: fd.get("isActive") === "true",
     };
     if (editingAnnouncement) {
-      if (!window.confirm("Save changes to this announcement?")) return;
-      await updateAnnouncement(editingAnnouncement.id, data);
-      setEditingAnnouncement(null);
+      setConfirm({
+        title: "Update Announcement",
+        description: "Save changes to this announcement?",
+        onConfirm: async () => {
+          await updateAnnouncement(editingAnnouncement.id, data);
+          setEditingAnnouncement(null);
+          toast.success("Announcement updated");
+        },
+      });
     } else {
-      if (!window.confirm("Add this new announcement?")) return;
-      await addAnnouncement(data);
-      setIsAddOpen(false);
+      setConfirm({
+        title: "Add Announcement",
+        description: "Add this new announcement?",
+        onConfirm: async () => {
+          await addAnnouncement(data);
+          setIsAddOpen(false);
+          toast.success("Announcement added");
+        },
+      });
     }
   };
 
@@ -107,7 +122,7 @@ export default function AnnouncementsAdmin() {
                       </DialogTrigger>
                       <DialogContent><DialogHeader><DialogTitle>Edit Announcement</DialogTitle></DialogHeader><AnnouncementForm announcement={a} /></DialogContent>
                     </Dialog>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { if (window.confirm("Delete this announcement?")) deleteAnnouncement(a.id); }}>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setConfirm({ title: "Delete Announcement", description: "Delete this announcement?", onConfirm: async () => { await deleteAnnouncement(a.id); toast.success("Announcement deleted"); } })}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -121,6 +136,7 @@ export default function AnnouncementsAdmin() {
         </Table>
         </div>
       </div>
+      {confirm && <ConfirmDialog open={!!confirm} onOpenChange={() => setConfirm(null)} title={confirm.title} description={confirm.description} onConfirm={confirm.onConfirm} />}
     </AdminLayout>
   );
 }

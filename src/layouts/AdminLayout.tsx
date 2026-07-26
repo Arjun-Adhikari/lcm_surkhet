@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Toaster } from "sonner";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -110,6 +111,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </header>
         <div className="p-4 md:p-8 overflow-y-auto flex-1">{children}</div>
       </main>
+      <Toaster position="top-right" richColors />
     </div>
   );
 }

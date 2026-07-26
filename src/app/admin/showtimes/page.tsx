@@ -10,11 +10,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Plus, Edit2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function ShowtimesAdmin() {
   const { showtimes, movies, addShowtime, updateShowtime, deleteShowtime } = useAppStore();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingShowtime, setEditingShowtime] = useState<Showtime | null>(null);
+  const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,13 +36,25 @@ export default function ShowtimesAdmin() {
       availableSeats: Number(fd.get("availableSeats")),
     };
     if (editingShowtime) {
-      if (!window.confirm("Save changes to this showtime?")) return;
-      await updateShowtime(editingShowtime.id, showtimeData);
-      setEditingShowtime(null);
+      setConfirm({
+        title: "Update Showtime",
+        description: "Save changes to this showtime?",
+        onConfirm: async () => {
+          await updateShowtime(editingShowtime.id, showtimeData);
+          setEditingShowtime(null);
+          toast.success("Showtime updated");
+        },
+      });
     } else {
-      if (!window.confirm("Add this new showtime?")) return;
-      await addShowtime(showtimeData);
-      setIsAddOpen(false);
+      setConfirm({
+        title: "Add Showtime",
+        description: "Add this new showtime?",
+        onConfirm: async () => {
+          await addShowtime(showtimeData);
+          setIsAddOpen(false);
+          toast.success("Showtime added");
+        },
+      });
     }
   };
 
@@ -139,7 +154,7 @@ export default function ShowtimesAdmin() {
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Edit Showtime</DialogTitle></DialogHeader><ShowtimeForm showtime={showtime} /></DialogContent>
                       </Dialog>
-                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { if (window.confirm("Delete this showtime?")) deleteShowtime(showtime.id); }}>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setConfirm({ title: "Delete Showtime", description: "Delete this showtime?", onConfirm: async () => { await deleteShowtime(showtime.id); toast.success("Showtime deleted"); } })}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -154,6 +169,7 @@ export default function ShowtimesAdmin() {
         </Table>
         </div>
       </div>
+      {confirm && <ConfirmDialog open={!!confirm} onOpenChange={() => setConfirm(null)} title={confirm.title} description={confirm.description} onConfirm={confirm.onConfirm} />}
     </AdminLayout>
   );
 }

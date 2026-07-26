@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { toast } from "sonner";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { useAppStore } from "@/lib/store";
 import type { Movie } from "@/lib/store";
@@ -12,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { FileUpload } from "@/components/FileUpload";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Plus, Edit2, Trash2, Search } from "lucide-react";
 
 export default function MoviesAdmin() {
@@ -19,6 +21,7 @@ export default function MoviesAdmin() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
+  const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);
 
   const filteredMovies = movies.filter((m) =>
     m.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -46,13 +49,17 @@ export default function MoviesAdmin() {
       cast: (fd.get("cast") as string).split(",").map((s) => s.trim()),
     };
     if (editingMovie) {
-      if (!window.confirm("Save changes to this movie?")) return;
-      await updateMovie(editingMovie.id, movieData);
-      setEditingMovie(null);
+      setConfirm({ title: "Update Movie", description: `Save changes to "${movieData.title}"?`, onConfirm: async () => {
+        await updateMovie(editingMovie.id, movieData);
+        setEditingMovie(null);
+        toast.success("Movie updated");
+      }});
     } else {
-      if (!window.confirm("Add this new movie?")) return;
-      await addMovie(movieData);
-      setIsAddOpen(false);
+      setConfirm({ title: "Add Movie", description: `Add "${movieData.title}" to the catalog?`, onConfirm: async () => {
+        await addMovie(movieData);
+        setIsAddOpen(false);
+        toast.success("Movie added");
+      }});
     }
   };
 
@@ -192,7 +199,7 @@ export default function MoviesAdmin() {
                         <MovieForm movie={movie} />
                       </DialogContent>
                     </Dialog>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { if (window.confirm("Delete this movie?")) deleteMovie(movie.id); }}>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setConfirm({ title: "Delete Movie", description: `Delete "${movie.title}"? This cannot be undone.`, onConfirm: async () => { await deleteMovie(movie.id); toast.success("Movie deleted"); } })}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -206,6 +213,7 @@ export default function MoviesAdmin() {
         </Table>
         </div>
       </div>
+      {confirm && <ConfirmDialog open={!!confirm} onOpenChange={() => setConfirm(null)} title={confirm.title} description={confirm.description} onConfirm={confirm.onConfirm} />}
     </AdminLayout>
   );
 }

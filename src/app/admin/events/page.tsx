@@ -13,11 +13,14 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { FileUpload } from "@/components/FileUpload";
 import { Plus, Edit2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function EventsAdmin() {
   const { events, addEvent, updateEvent, deleteEvent } = useAppStore();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,13 +34,25 @@ export default function EventsAdmin() {
       description: fd.get("description") as string,
     };
     if (editingEvent) {
-      if (!window.confirm("Save changes to this event?")) return;
-      await updateEvent(editingEvent.id, eventData);
-      setEditingEvent(null);
+      setConfirm({
+        title: "Update Event",
+        description: "Save changes to this event?",
+        onConfirm: async () => {
+          await updateEvent(editingEvent.id, eventData);
+          setEditingEvent(null);
+          toast.success("Event updated");
+        },
+      });
     } else {
-      if (!window.confirm("Add this new event?")) return;
-      await addEvent(eventData);
-      setIsAddOpen(false);
+      setConfirm({
+        title: "Add Event",
+        description: "Add this new event?",
+        onConfirm: async () => {
+          await addEvent(eventData);
+          setIsAddOpen(false);
+          toast.success("Event added");
+        },
+      });
     }
   };
 
@@ -112,7 +127,7 @@ export default function EventsAdmin() {
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Edit Event</DialogTitle></DialogHeader><EventForm event={event} /></DialogContent>
                     </Dialog>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { if (window.confirm("Delete this event?")) deleteEvent(event.id); }}>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setConfirm({ title: "Delete Event", description: "Delete this event?", onConfirm: async () => { await deleteEvent(event.id); toast.success("Event deleted"); } })}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -126,6 +141,7 @@ export default function EventsAdmin() {
         </Table>
         </div>
       </div>
+      {confirm && <ConfirmDialog open={!!confirm} onOpenChange={() => setConfirm(null)} title={confirm.title} description={confirm.description} onConfirm={confirm.onConfirm} />}
     </AdminLayout>
   );
 }

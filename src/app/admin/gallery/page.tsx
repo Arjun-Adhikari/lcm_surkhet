@@ -11,35 +11,50 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { FileUpload } from "@/components/FileUpload";
 import { Plus, Trash2, Pen, Image as ImageIcon } from "lucide-react";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function GalleryAdmin() {
   const { gallery, addGalleryItem, updateGalleryItem, deleteGalleryItem } = useAppStore();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
+  const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!window.confirm("Add this photo to the gallery?")) return;
     const fd = new FormData(e.currentTarget);
-    await addGalleryItem({
-      title: fd.get("title") as string,
-      imageUrl: fd.get("imageUrl") as string,
-      category: fd.get("category") as GalleryItem["category"],
+    setConfirm({
+      title: "Add Photo",
+      description: "Add this photo to the gallery?",
+      onConfirm: async () => {
+        await addGalleryItem({
+          title: fd.get("title") as string,
+          imageUrl: fd.get("imageUrl") as string,
+          category: fd.get("category") as GalleryItem["category"],
+        });
+        setIsAddOpen(false);
+        toast.success("Photo added");
+      },
     });
-    setIsAddOpen(false);
   };
 
   const handleEditSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingItem) return;
-    if (!window.confirm("Save changes to this photo?")) return;
     const fd = new FormData(e.currentTarget);
-    await updateGalleryItem(editingItem.id, {
-      title: fd.get("title") as string,
-      imageUrl: fd.get("imageUrl") as string,
-      category: fd.get("category") as GalleryItem["category"],
+    setConfirm({
+      title: "Update Photo",
+      description: "Save changes to this photo?",
+      onConfirm: async () => {
+        await updateGalleryItem(editingItem.id, {
+          title: fd.get("title") as string,
+          imageUrl: fd.get("imageUrl") as string,
+          category: fd.get("category") as GalleryItem["category"],
+        });
+        setEditingItem(null);
+        toast.success("Photo updated");
+      },
     });
-    setEditingItem(null);
   };
 
   return (
@@ -89,7 +104,7 @@ export default function GalleryAdmin() {
                 <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full shadow-md" onClick={() => setEditingItem(item)}>
                   <Pen className="w-4 h-4" />
                 </Button>
-                <Button size="icon" variant="destructive" className="h-8 w-8 rounded-full shadow-md" onClick={() => { if (window.confirm("Delete this photo?")) deleteGalleryItem(item.id); }}>
+                <Button size="icon" variant="destructive" className="h-8 w-8 rounded-full shadow-md" onClick={() => setConfirm({ title: "Delete Photo", description: "Delete this photo?", onConfirm: async () => { await deleteGalleryItem(item.id); toast.success("Photo deleted"); } })}>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
@@ -125,6 +140,7 @@ export default function GalleryAdmin() {
           </form>
         </DialogContent>
       </Dialog>
+      {confirm && <ConfirmDialog open={!!confirm} onOpenChange={() => setConfirm(null)} title={confirm.title} description={confirm.description} onConfirm={confirm.onConfirm} />}
     </AdminLayout>
   );
 }
