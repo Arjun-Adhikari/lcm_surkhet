@@ -14,13 +14,11 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useAppStore } from "@/lib/store";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Toaster } from "sonner";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { settings } = useAppStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
@@ -34,8 +32,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   const sidebar = (
     <aside className="w-64 bg-zinc-900 text-zinc-300 flex flex-col h-full shrink-0">
-      <div className="h-16 flex items-center px-6 border-b border-zinc-800 bg-zinc-950 text-white font-serif font-bold text-lg tracking-tight truncate">
-        {settings.name} Admin
+      <div className="h-16 flex items-center px-6 border-b border-zinc-800 bg-zinc-950 text-white font-bold text-base tracking-tight">
+        Admin Nav
       </div>
       <div className="p-4 flex-1 overflow-y-auto">
         <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4 px-2">
