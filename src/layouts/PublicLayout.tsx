@@ -133,7 +133,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
               </div>
               <span className="font-serif font-bold text-xl tracking-tight">{settings.name}</span>
             </Link>
-            <p className="max-w-xs text-sm leading-relaxed">
+            <p className="max-w-xs text-sm leading-relaxed hidden sm:block">
               {settings.aboutText ? settings.aboutText.substring(0, 150) + "..." : ""}
             </p>
           </div>
