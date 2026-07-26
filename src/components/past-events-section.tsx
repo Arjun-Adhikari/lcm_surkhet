@@ -1,7 +1,12 @@
 import { getPastEvents } from "@/lib/data";
 
+interface PastEvent {
+  id: string; title: string; date: string; time: string;
+  description: string; imageUrl: string; status: string;
+}
+
 export async function PastEventsSection() {
-  const { events: past } = await getPastEvents(1, 3);
+  const { events: past } = await getPastEvents(1, 3) as { events: PastEvent[]; total: number };
 
   if (past.length === 0) return null;
 

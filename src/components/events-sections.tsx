@@ -1,8 +1,13 @@
 import { Calendar, MapPin, Clock } from "lucide-react";
 import { getUpcomingEvents } from "@/lib/data";
 
+interface UpcomingEvent {
+  id: string; title: string; date: string; time: string;
+  description: string; imageUrl: string; status: string;
+}
+
 export async function UpcomingEventsSection() {
-  const upcoming = await getUpcomingEvents();
+  const upcoming = await getUpcomingEvents() as UpcomingEvent[];
 
   if (upcoming.length === 0) {
     return (
