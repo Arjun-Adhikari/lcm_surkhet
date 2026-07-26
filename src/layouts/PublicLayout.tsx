@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Film, Calendar, Image as ImageIcon, Info, MapPin, Menu, X, Phone, Clock } from "lucide-react";
+import { Film, Calendar, Image as ImageIcon, Info, MapPin, Menu, X, Phone, Clock, LogIn } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAppStore } from "@/lib/store";
 
@@ -73,6 +73,9 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           </nav>
 
           <div className="flex items-center gap-1">
+            <Link href="/admin/login" className="p-2 text-muted-foreground hover:text-primary transition-colors" title="Admin Login">
+              <LogIn className="w-5 h-5" />
+            </Link>
             <ThemeToggle />
             <button
               className="md:hidden p-2 text-foreground"
@@ -100,6 +103,14 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/admin/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-4 rounded-lg text-lg font-medium transition-colors hover:bg-muted mt-2 border-t border-border pt-4"
+            >
+              <LogIn className="w-5 h-5" />
+              Admin Login
+            </Link>
           </nav>
         </div>
       )}
@@ -160,9 +171,6 @@ export function PublicLayout({ children }: PublicLayoutProps) {
         </div>
         <div className="container mx-auto px-4 mt-6 md:mt-12 pt-4 md:pt-6 border-t border-zinc-800 text-sm flex flex-col md:flex-row items-center justify-between">
           <p>© {new Date().getFullYear()} {settings.name}. All rights reserved.</p>
-          <div className="flex items-center gap-4 mt-4 md:mt-0">
-            <Link href="/admin/login" className="hover:text-primary transition-colors">Admin Login</Link>
-          </div>
         </div>
       </footer>
     </div>
