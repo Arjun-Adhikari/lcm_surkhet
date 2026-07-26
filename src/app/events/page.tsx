@@ -8,10 +8,10 @@ export default function EventsPage() {
   return (
     <PublicLayout>
       <div className="bg-zinc-100 dark:bg-zinc-900 dark:text-white border-b">
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Events & Premieres</h1>
-          <p className="text-lg text-muted-foreground dark:text-zinc-300 max-w-2xl">
-            Join us for special screenings, cast meet-and-greets, and cinema festivals right here in Surkhet.
+        <div className="container mx-auto px-4 py-4 md:py-6">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-2">Events & Premieres</h1>
+          <p className="text-base text-muted-foreground dark:text-zinc-300">
+            Special screenings and cinema festivals in Surkhet.
           </p>
         </div>
       </div>

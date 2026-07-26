@@ -30,9 +30,9 @@ export default function Home() {
     <PublicLayout>
       <HomeHero movie={heroMovie} />
 
-      <section className="py-20 bg-background">
+      <section className="py-10 md:py-14 bg-background">
         <div className="container mx-auto px-4">
-          <div className="flex items-end justify-between mb-10">
+          <div className="flex items-end justify-between mb-8">
             <div>
               <h2 className="text-3xl md:text-4xl font-serif font-bold mb-2">Now Showing</h2>
               <p className="text-muted-foreground">Catch the latest blockbusters on the big screen.</p>
@@ -44,7 +44,7 @@ export default function Home() {
 
           <NowShowingGrid />
 
-          <div className="mt-8 text-center sm:hidden">
+          <div className="mt-6 text-center sm:hidden">
             <Button variant="outline" className="w-full rounded-full" asChild>
               <Link href="/movies">View All Movies</Link>
             </Button>
@@ -52,7 +52,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-12 bg-primary text-primary-foreground">
+      <section className="py-8 md:py-10 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           <div className="md:col-span-2">
             <p className="text-xs uppercase tracking-[0.2em] font-bold opacity-80 mb-2">Plan your visit</p>
@@ -73,7 +73,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 bg-zinc-950 text-white border-y border-zinc-800">
+      <section className="py-10 md:py-14 bg-zinc-950 text-white border-y border-zinc-800">
         <div className="container mx-auto px-4 text-center max-w-4xl">
           <h2 className="text-3xl md:text-5xl font-serif font-bold mb-6">Cinematic Brilliance in Surkhet</h2>
           <p className="text-zinc-400 text-lg md:text-xl mb-10">
