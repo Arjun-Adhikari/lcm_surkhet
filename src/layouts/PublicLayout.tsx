@@ -127,6 +127,13 @@ export function PublicLayout({ children }: PublicLayoutProps) {
         </div>
       )}
 
+      <a
+        href={`tel:083-521060`}
+        className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors hover:scale-105 active:scale-95"
+        aria-label="Call box office"
+      >
+        <Phone className="w-6 h-6" />
+      </a>
       <main className="flex-1">{children}</main>
 
       <footer className="bg-zinc-950 text-zinc-400 py-8 md:py-12 mt-auto border-t-4 border-primary">
