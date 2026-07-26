@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Phone, CalendarDays } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { useAppStore } from "@/lib/store";
 import { HomeHero } from "@/components/home-hero";
@@ -52,26 +52,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-8 md:py-10 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-          <div className="md:col-span-2">
-            <p className="text-xs uppercase tracking-[0.2em] font-bold opacity-80 mb-2">Plan your visit</p>
-            <h2 className="text-2xl md:text-3xl font-serif font-bold mb-2">
-              Check showtimes, then call the box office
-            </h2>
-            <p className="opacity-90 max-w-2xl">{settings.ticketPolicy}</p>
-          </div>
-          <div className="flex flex-col sm:flex-row md:flex-col gap-3 md:items-end">
-            <div className="flex items-center gap-3">
-              <CalendarDays className="w-5 h-5" />
-              <span>Shows listed by date online</span>
-            </div>
-            <Button variant="secondary" className="rounded-full" asChild>
-              <Link href="/contact"><Phone className="w-4 h-4 mr-2" /> Call {settings.phone}</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
 
       <section className="py-10 md:py-14 bg-zinc-950 text-white border-y border-zinc-800">
         <div className="container mx-auto px-4 text-center max-w-4xl">
