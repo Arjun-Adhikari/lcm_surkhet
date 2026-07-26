@@ -46,7 +46,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
       <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="container mx-auto px-4 h-14 md:h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="bg-primary text-primary-foreground p-1.5 rounded-md group-hover:scale-105 transition-transform">
               <Film className="w-6 h-6" />
@@ -89,7 +89,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       </header>
 
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-16 z-30 bg-background border-t">
+        <div className="md:hidden fixed inset-0 top-14 md:top-16 z-30 bg-background border-t">
           <nav className="flex flex-col p-4 gap-2">
             {navLinks.map((link) => (
               <Link
@@ -133,8 +133,8 @@ export function PublicLayout({ children }: PublicLayoutProps) {
 
       <main className="flex-1">{children}</main>
 
-      <footer className="bg-zinc-950 text-zinc-400 py-12 mt-auto border-t-4 border-primary">
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="bg-zinc-950 text-zinc-400 py-8 md:py-12 mt-auto border-t-4 border-primary">
+        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
           <div className="col-span-1 md:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2 text-zinc-100">
               <div className="bg-primary text-primary-foreground p-1.5 rounded-md">
@@ -173,7 +173,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             </ul>
           </div>
         </div>
-        <div className="container mx-auto px-4 mt-12 pt-6 border-t border-zinc-800 text-sm flex flex-col md:flex-row items-center justify-between">
+        <div className="container mx-auto px-4 mt-6 md:mt-12 pt-4 md:pt-6 border-t border-zinc-800 text-sm flex flex-col md:flex-row items-center justify-between">
           <p>© {new Date().getFullYear()} {settings.name}. All rights reserved.</p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
             <Link href="/admin/login" className="hover:text-primary transition-colors">Admin Login</Link>
