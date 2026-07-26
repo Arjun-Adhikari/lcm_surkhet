@@ -16,8 +16,13 @@ export function MovieDetailClient({ movie, showtimes }: Props) {
     const match = url.match(regExp);
     return match ? match[1] : null;
   };
-  const trailerId = getYoutubeId(movie.trailerUrl);
   const hasDates = showtimes.length > 0;
+  if (!movie.trailerUrl) return <div className="pt-4 flex flex-wrap gap-4">{movie.status === "now-showing" && hasDates && (
+    <Button size="lg" className="rounded-full" onClick={() => document.getElementById("showtimes")?.scrollIntoView({ behavior: "smooth" })}>
+      <Clock className="w-5 h-5 mr-2" /> View Showtimes
+    </Button>
+  )}</div>;
+  const trailerId = getYoutubeId(movie.trailerUrl);
   const isYoutubeUrl = movie.trailerUrl.toLowerCase().includes("youtube") || movie.trailerUrl.toLowerCase().includes("youtu.be");
 
   return (
