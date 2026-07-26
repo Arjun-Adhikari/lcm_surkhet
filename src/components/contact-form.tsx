@@ -30,14 +30,14 @@ export function ContactForm() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="subject">Subject</Label>
-        <Input id="subject" placeholder="Showtime inquiry, Feedback, etc." required />
+        <Input id="subject" placeholder="Feedback, inquiry, etc." required />
       </div>
       <div className="space-y-2">
         <Label htmlFor="message">Message</Label>
         <Textarea id="message" placeholder="How can we help you?" rows={5} required className="resize-none" />
       </div>
       <Button type="submit" size="lg" className="w-full">
-        <Send className="w-4 h-4 mr-2" /> Send Message
+        <Send className="w-4 h-4 mr-2" /> Send Feedback
       </Button>
     </form>
   );

@@ -78,7 +78,7 @@ function ContactContent() {
         </div>
 
         <div className="bg-card border rounded-2xl p-8 shadow-lg">
-          <h2 className="text-2xl font-serif font-bold mb-2">Visit or call the box office</h2>
+          <h2 className="text-2xl font-serif font-bold mb-2">Send us your feedback</h2>
           <p className="text-muted-foreground mb-8">{settings.ticketPolicy}</p>
           <ContactForm />
         </div>
