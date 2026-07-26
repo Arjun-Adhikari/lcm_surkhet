@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Film, Calendar, Image as ImageIcon, Info, MapPin, Menu, X, Phone, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAppStore } from "@/lib/store";
 
@@ -71,11 +70,6 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 {link.label}
               </Link>
             ))}
-            <Button asChild variant="default" className="rounded-full px-6">
-              <Link href="/contact">
-                <Phone className="w-4 h-4 mr-2" /> Contact Box Office
-              </Link>
-            </Button>
           </nav>
 
           <div className="flex items-center gap-1">
