@@ -16,10 +16,12 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Toaster } from "sonner";
+import { signOut, useSession } from "next-auth/react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { data: session } = useSession();
 
   const navItems = [
     { href: "/admin/movies", label: "Movies", icon: Film },
@@ -35,6 +37,21 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       <div className="h-16 flex items-center px-6 border-b border-zinc-800 bg-zinc-950 text-white font-bold text-base tracking-tight">
         Admin Nav
       </div>
+      {session?.user && (
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800">
+          {session.user.image && (
+            <img
+              src={session.user.image}
+              alt={session.user.name ?? ""}
+              className="w-9 h-9 rounded-full"
+            />
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white truncate">{session.user.name}</p>
+            <p className="text-xs text-zinc-500 truncate">{session.user.email}</p>
+          </div>
+        </div>
+      )}
       <div className="p-4 flex-1 overflow-y-auto">
         <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4 px-2">
           Management
@@ -61,14 +78,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </nav>
       </div>
       <div className="p-4 border-t border-zinc-800">
-        <Link
-          href="/"
-          onClick={() => setSidebarOpen(false)}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors hover:bg-zinc-800 hover:text-white text-zinc-400"
+        <button
+          onClick={() => { signOut({ callbackUrl: "/" }); setSidebarOpen(false); }}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors hover:bg-zinc-800 hover:text-white text-zinc-400 w-full text-left"
         >
           <LogOut className="w-5 h-5" />
-          Back to Site
-        </Link>
+          Logout
+        </button>
       </div>
     </aside>
   );
