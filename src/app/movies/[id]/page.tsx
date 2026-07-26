@@ -6,7 +6,7 @@ import { PublicLayout } from "@/layouts/PublicLayout";
 import { useAppStore } from "@/lib/store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, Phone } from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
 import { MovieDetailClient } from "@/components/movie-detail-client";
 import { ShowtimesPicker } from "@/components/showtimes-picker";
 
@@ -97,14 +97,6 @@ export default function MovieDetailPage() {
                   <Clock className="w-6 h-6 text-primary" />
                   <h2 className="text-2xl font-serif font-bold">Showtimes</h2>
                 </div>
-                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <p className="text-sm text-muted-foreground">
-                    Call the box office to ask about availability. Payment is made at the cinema counter only.
-                  </p>
-                  <Button variant="outline" className="shrink-0" asChild>
-                    <a href={`tel:${settings.phone?.replace(/\s/g, "")}`}><Phone className="w-4 h-4 mr-2" /> Call Box Office</a>
-                  </Button>
-                </div>
                 <ShowtimesPicker showtimes={showtimes} phone={settings.phone} />
               </section>
             )}
@@ -131,17 +123,7 @@ export default function MovieDetailPage() {
               </ul>
             </div>
 
-            <div className="rounded-xl bg-linear-to-br from-primary/20 to-primary/5 border border-primary/20 p-6 text-center">
-              <h3 className="font-serif font-bold text-xl mb-2 text-primary">Box Office</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                For ticket availability and reservations, please call the cinema. Payment at counter only.
-              </p>
-              <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground" asChild>
-                <a href={`tel:${settings.phone?.replace(/\s/g, "")}`}>
-                  <Phone className="w-4 h-4 mr-2" /> Call {settings.phone}
-                </a>
-              </Button>
-            </div>
+
           </div>
         </div>
       </div>
