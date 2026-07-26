@@ -16,7 +16,7 @@ const DEFAULT_SETTINGS = {
   id: "singleton",
   name: "Laxmi Chalchitra Mandir",
   address: "Birendranagar-6, Surkhet, Nepal",
-  phone: "+977 083-520123",
+  phone: "083-521060",
   email: "info@lcmsurkhet.com",
   openingTime: "9:00 AM",
   closingTime: "9:00 PM",
