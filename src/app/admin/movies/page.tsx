@@ -37,7 +37,10 @@ export default function MoviesAdmin() {
       releaseDate: fd.get("releaseDate") as string,
       posterUrl: fd.get("posterUrl") as string,
       backdropUrl: fd.get("backdropUrl") as string,
-      trailerUrl: fd.get("trailerUrl") as string,
+      trailerUrl: ((url) => {
+        const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        return m ? `https://www.youtube.com/embed/${m[1]}` : url;
+      })(fd.get("trailerUrl") as string),
       synopsis: fd.get("synopsis") as string,
       genre: (fd.get("genre") as string).split(",").map((s) => s.trim()),
       cast: (fd.get("cast") as string).split(",").map((s) => s.trim()),
