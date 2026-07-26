@@ -106,13 +106,6 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 {link.label}
               </Link>
             ))}
-            <div className="mt-4 pt-4 border-t border-border">
-              <Button asChild className="w-full h-12 text-lg">
-                <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
-                  <Phone className="w-5 h-5 mr-2" /> Contact Box Office
-                </Link>
-              </Button>
-            </div>
           </nav>
         </div>
       )}
