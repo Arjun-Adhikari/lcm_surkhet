@@ -7,11 +7,11 @@ import { Film, Award, Users, Volume2 } from "lucide-react";
 export default function About() {
   return (
     <PublicLayout>
-      <div className="py-20 md:py-24 bg-zinc-100 dark:bg-zinc-900 border-b">
+      <div className="py-20 md:py-24 bg-zinc-100 dark:bg-zinc-900 dark:text-white border-b">
         <div className="container mx-auto px-4 text-center">
           <Film className="w-16 h-16 mx-auto text-primary mb-6" />
-          <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-foreground">Our Story</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">Our Story</h1>
+          <p className="text-xl text-muted-foreground dark:text-zinc-300 max-w-2xl mx-auto leading-relaxed">
             Bringing the magic of cinema to Surkhet. A legacy of entertainment, reimagined for the modern era.
           </p>
         </div>
