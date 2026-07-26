@@ -12,40 +12,44 @@ interface Props {
 
 export function MovieDetailClient({ movie, showtimes }: Props) {
   const getYoutubeId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+    return match ? match[1] : null;
   };
   const trailerId = getYoutubeId(movie.trailerUrl);
   const hasDates = showtimes.length > 0;
+  const isYoutubeUrl = movie.trailerUrl.toLowerCase().includes("youtube") || movie.trailerUrl.toLowerCase().includes("youtu.be");
 
   return (
     <div className="pt-4 flex flex-wrap gap-4">
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button size="lg" variant="outline" className="rounded-full bg-white/10 text-white border-white/20 hover:bg-white hover:text-black">
-            <Play className="w-5 h-5 mr-2" /> Watch Trailer
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-4xl p-0 bg-black border-zinc-800 overflow-hidden">
-          <DialogTitle className="sr-only">Trailer for {movie.title}</DialogTitle>
-          <DialogDescription className="sr-only">Video trailer</DialogDescription>
-          <div className="aspect-video w-full bg-black">
-            {trailerId ? (
+      {isYoutubeUrl && trailerId ? (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button size="lg" variant="outline" className="rounded-full bg-white/10 text-white border-white/20 hover:bg-white hover:text-black">
+              <Play className="w-5 h-5 mr-2" /> Watch Trailer
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl p-0 bg-black border-zinc-800 overflow-hidden">
+            <DialogTitle className="sr-only">Trailer for {movie.title}</DialogTitle>
+            <DialogDescription className="sr-only">Video trailer</DialogDescription>
+            <div className="aspect-video w-full bg-black">
               <iframe
                 width="100%" height="100%"
-                src={`https://www.youtube.com/embed/${trailerId}?autoplay=1`}
+                src={`https://www.youtube-nocookie.com/embed/${trailerId}?autoplay=0&rel=0`}
                 title="Trailer"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-zinc-500">Trailer unavailable</div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+            </div>
+          </DialogContent>
+        </Dialog>
+      ) : movie.trailerUrl ? (
+        <Button size="lg" variant="outline" className="rounded-full bg-white/10 text-white border-white/20 hover:bg-white hover:text-black" asChild>
+          <a href={movie.trailerUrl} target="_blank" rel="noopener noreferrer">
+            <Play className="w-5 h-5 mr-2" /> Watch Trailer
+          </a>
+        </Button>
+      ) : null}
 
       {movie.status === "now-showing" && hasDates && (
         <Button size="lg" className="rounded-full" onClick={() => document.getElementById("showtimes")?.scrollIntoView({ behavior: "smooth" })}>
