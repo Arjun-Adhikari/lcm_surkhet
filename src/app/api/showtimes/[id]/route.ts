@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-guard";
 
 function serializeShowtime(st: Awaited<ReturnType<typeof prisma.showtime.findUniqueOrThrow>>) {
   return {
@@ -29,6 +30,9 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const { id } = await params;
   const data = await req.json();
   const showtime = await prisma.showtime.update({
@@ -48,9 +52,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const { id } = await params;
   await prisma.showtime.deleteMany({ where: { id } });
   revalidateTag("showtimes");

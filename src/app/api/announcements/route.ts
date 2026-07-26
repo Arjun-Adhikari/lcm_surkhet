@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-guard";
 
 function serializeAnnouncement(item: Awaited<ReturnType<typeof prisma.announcement.findMany>>[0]) {
   return {
@@ -17,6 +18,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const data = await req.json();
   const announcement = await prisma.announcement.create({
     data: {

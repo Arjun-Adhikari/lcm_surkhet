@@ -28,6 +28,11 @@ export function FileUpload({ name, folder, defaultValue, accept = "image/*" }: F
       fd.append("file", file);
       fd.append("folder", folder);
       const res = await fetch("/api/upload", { method: "POST", body: fd });
+      if (res.status === 401) {
+        const { signOut } = await import("next-auth/react");
+        signOut({ callbackUrl: "/admin/login" });
+        throw new Error("Unauthorized");
+      }
       if (!res.ok) {
         const text = await res.text();
         throw new Error(text || "Upload failed");

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { deleteImageByUrl } from "@/lib/cloudinary";
+import { requireAuth } from "@/lib/auth-guard";
 
 function fromStatus(s: string) {
   switch (s) {
@@ -55,6 +56,9 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const { id } = await params;
   const data = await req.json();
   const movie = await prisma.movie.update({
@@ -81,9 +85,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const { id } = await params;
   const movie = await prisma.movie.findUnique({ where: { id } });
   if (movie) {

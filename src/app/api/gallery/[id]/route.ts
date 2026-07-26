@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { deleteImageByUrl } from "@/lib/cloudinary";
+import { requireAuth } from "@/lib/auth-guard";
 
 export async function GET(
   _req: Request,
@@ -17,6 +18,9 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const { id } = await params;
   const data = await req.json();
   const item = await prisma.galleryItem.update({
@@ -28,9 +32,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const { id } = await params;
   const item = await prisma.galleryItem.findUnique({ where: { id } });
   if (item) await deleteImageByUrl(item.imageUrl);

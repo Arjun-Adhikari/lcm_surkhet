@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-guard";
 
 const DEFAULT_SETTINGS = {
   id: "singleton",
@@ -45,6 +46,9 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const data = await req.json();
   let settings = await prisma.cinemaSettings.findFirst();
 

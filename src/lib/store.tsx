@@ -79,6 +79,11 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
     ...options,
     headers: { "Content-Type": "application/json", ...options?.headers },
   });
+  if (res.status === 401) {
+    const { signOut } = await import("next-auth/react");
+    signOut({ callbackUrl: "/admin/login" });
+    throw new Error("Unauthorized");
+  }
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`HTTP ${res.status}: ${text}`);
