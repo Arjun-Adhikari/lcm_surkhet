@@ -71,7 +71,6 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 {link.label}
               </Link>
             ))}
-            <ThemeToggle />
             <Button asChild variant="default" className="rounded-full px-6">
               <Link href="/contact">
                 <Phone className="w-4 h-4 mr-2" /> Contact Box Office
@@ -79,12 +78,15 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             </Button>
           </nav>
 
-          <button
-            className="md:hidden p-2 text-foreground"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X /> : <Menu />}
-          </button>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <button
+              className="md:hidden p-2 text-foreground"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -105,10 +107,6 @@ export function PublicLayout({ children }: PublicLayoutProps) {
               </Link>
             ))}
             <div className="mt-4 pt-4 border-t border-border">
-              <div className="flex items-center justify-between mb-3 px-4">
-                <span className="text-sm font-medium text-muted-foreground">Appearance</span>
-                <ThemeToggle />
-              </div>
               <Button asChild className="w-full h-12 text-lg">
                 <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
                   <Phone className="w-5 h-5 mr-2" /> Contact Box Office
