@@ -93,6 +93,49 @@ model Announcement {
   @@map("announcements")
 }
 
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model PendingUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  token2FA  String
+  expiresAt DateTime
+
+  @@map("pending_users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  firstName String   @db.Text
+  lastName  String   @db.Text
+  email     String   @db.Text
+  subject   String   @db.Text
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("feedback")
+}
+
 model CinemaSettings {
   id           String   @id @default("singleton")
   name         String   @db.Text
