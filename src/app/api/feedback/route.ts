@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import nodemailer from "nodemailer";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -12,8 +13,21 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+function getIp(req: Request): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+}
+
 export async function POST(req: Request) {
   const { firstName, lastName, email, subject, message } = await req.json();
+
+  const ip = getIp(req);
+  const { allowed, retryAfter } = checkRateLimit(`feedback:${ip}`, 3, 24 * 60 * 60 * 1000);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many submissions. Try again later." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
+    );
+  }
 
   if (!firstName || !lastName || !email || !subject || !message) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });

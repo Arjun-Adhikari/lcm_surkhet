@@ -11,6 +11,16 @@ export const authOptions: NextAuthOptions = {
   pages: {
     error: "/auth/error",
   },
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   callbacks: {
     async signIn({ user }) {
       const allowedEmail = process.env.ALLOWED_ADMIN_EMAIL;

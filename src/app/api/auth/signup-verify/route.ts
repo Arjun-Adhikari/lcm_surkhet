@@ -38,17 +38,18 @@ export async function POST(req: Request) {
     },
   });
 
+  const isProd = process.env.NODE_ENV === "production";
   const res = NextResponse.json({ success: true });
   res.cookies.set("access_token", accessToken, {
     httpOnly: true,
-    secure: true,
+    secure: isProd,
     sameSite: "strict",
     maxAge: 15 * 60,
     path: "/",
   });
   res.cookies.set("refresh_token", refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure: isProd,
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60,
     path: "/",
