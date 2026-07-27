@@ -4,12 +4,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { useAppStore } from "@/lib/store";
+import { useSettings, useMovies, DEFAULT_SETTINGS } from "@/lib/store";
 import { HomeHero } from "@/components/home-hero";
 import { NowShowingGrid } from "@/components/now-showing-grid";
 
 export default function Home() {
-  const { settings, movies } = useAppStore();
+  const { data: settingsData } = useSettings();
+  const { data: movies = [] } = useMovies();
+  const settings = settingsData ?? DEFAULT_SETTINGS;
   const nowShowing = movies.filter((m) => m.status === "now-showing");
   const heroMovie = nowShowing[0] || movies[0];
 

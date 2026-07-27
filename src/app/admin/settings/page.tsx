@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { useAppStore } from "@/lib/store";
+import { useAppStore, useSettings, DEFAULT_SETTINGS } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +12,9 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function SettingsAdmin() {
-  const { settings, updateSettings } = useAppStore();
+  const { data: settingsData } = useSettings();
+  const settings = settingsData ?? DEFAULT_SETTINGS;
+  const { updateSettings } = useAppStore();
   const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { useAppStore } from "@/lib/store";
+import { useSettings, DEFAULT_SETTINGS } from "@/lib/store";
 import { Film, Award, Users, Volume2 } from "lucide-react";
 
 export default function About() {
@@ -22,7 +22,8 @@ export default function About() {
 }
 
 function AboutContent() {
-  const { settings } = useAppStore();
+  const { data: settingsData } = useSettings();
+  const settings = settingsData ?? DEFAULT_SETTINGS;
 
   return (
     <div className="container mx-auto px-4 py-20">

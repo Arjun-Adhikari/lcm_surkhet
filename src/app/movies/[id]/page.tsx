@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { useAppStore } from "@/lib/store";
+import { useMovies, useShowtimes, useSettings, DEFAULT_SETTINGS } from "@/lib/store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Calendar } from "lucide-react";
@@ -12,7 +12,10 @@ import { ShowtimesPicker } from "@/components/showtimes-picker";
 
 export default function MovieDetailPage() {
   const params = useParams<{ id: string }>();
-  const { movies, moviesLoading, showtimes: allShowtimes, settings } = useAppStore();
+  const { data: movies = [], isLoading: moviesLoading } = useMovies();
+  const { data: allShowtimes = [] } = useShowtimes();
+  const { data: settingsData } = useSettings();
+  const settings = settingsData ?? DEFAULT_SETTINGS;
 
   const movie = useMemo(() => movies.find((m) => m.id === params.id), [movies, params.id]);
   const showtimes = useMemo(() => allShowtimes.filter((s) => s.movieId === params.id), [allShowtimes, params.id]);

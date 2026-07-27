@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { useAppStore } from "@/lib/store";
+import { useAppStore, useGallery } from "@/lib/store";
 import type { GalleryItem } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,8 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function GalleryAdmin() {
-  const { gallery, addGalleryItem, updateGalleryItem, deleteGalleryItem } = useAppStore();
+  const { data: gallery = [] } = useGallery();
+  const { addGalleryItem, updateGalleryItem, deleteGalleryItem } = useAppStore();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);

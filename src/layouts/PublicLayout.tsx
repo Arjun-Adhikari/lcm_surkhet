@@ -5,14 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Film, Calendar, Image as ImageIcon, Info, MapPin, Menu, X, Phone, Clock, LogIn } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useAppStore } from "@/lib/store";
+import { useSettings, useAnnouncements, DEFAULT_SETTINGS } from "@/lib/store";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
 }
 
 export function PublicLayout({ children }: PublicLayoutProps) {
-  const { settings, announcements } = useAppStore();
+  const { data: settingsData } = useSettings();
+  const { data: announcements = [] } = useAnnouncements();
+  const settings = settingsData ?? DEFAULT_SETTINGS;
   const activeAnnouncements = announcements.filter((a) => a.isActive);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [announcementIndex, setAnnouncementIndex] = useState(0);

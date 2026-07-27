@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { useAppStore } from "@/lib/store";
+import { useGallery } from "@/lib/store";
 
 export default function GalleryPage() {
   return (
@@ -21,7 +21,7 @@ export default function GalleryPage() {
 }
 
 function GalleryContent() {
-  const { gallery } = useAppStore();
+  const { data: gallery = [] } = useGallery();
   const [filter, setFilter] = useState<string>("all");
   const categories = [...new Set(gallery.map((g) => g.category))];
   const filtered = filter === "all" ? gallery : gallery.filter((g) => g.category === filter);

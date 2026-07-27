@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { useAppStore } from "@/lib/store";
+import { useAppStore, useMovies } from "@/lib/store";
 import type { Movie } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,8 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Plus, Edit2, Trash2, Search } from "lucide-react";
 
 export default function MoviesAdmin() {
-  const { movies, addMovie, updateMovie, deleteMovie } = useAppStore();
+  const { data: movies = [] } = useMovies();
+  const { addMovie, updateMovie, deleteMovie } = useAppStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);

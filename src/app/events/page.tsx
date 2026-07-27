@@ -1,7 +1,7 @@
 "use client";
 
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { useAppStore } from "@/lib/store";
+import { useEvents } from "@/lib/store";
 import { Calendar, MapPin, Clock } from "lucide-react";
 
 export default function EventsPage() {
@@ -21,7 +21,7 @@ export default function EventsPage() {
 }
 
 function EventsContent() {
-  const { events } = useAppStore();
+  const { data: events = [] } = useEvents();
   const upcoming = events.filter((e) => e.status === "upcoming");
   const past = events.filter((e) => e.status === "past");
 

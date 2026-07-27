@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { useAppStore } from "@/lib/store";
+import { useAppStore, useShowtimes, useMovies } from "@/lib/store";
 import type { Showtime } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,9 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function ShowtimesAdmin() {
-  const { showtimes, movies, addShowtime, updateShowtime, deleteShowtime } = useAppStore();
+  const { data: showtimes = [] } = useShowtimes();
+  const { data: movies = [] } = useMovies();
+  const { addShowtime, updateShowtime, deleteShowtime } = useAppStore();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingShowtime, setEditingShowtime] = useState<Showtime | null>(null);
   const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);

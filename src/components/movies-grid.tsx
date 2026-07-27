@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Clock, Play, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAppStore } from "@/lib/store";
+import { useMovies, useShowtimes } from "@/lib/store";
 import type { Movie, Showtime } from "@/lib/store";
 
 function MovieCard({ movie, showtimes }: { movie: Movie; showtimes: Showtime[] }) {
@@ -63,7 +63,8 @@ function MovieCard({ movie, showtimes }: { movie: Movie; showtimes: Showtime[] }
 }
 
 export function NowShowingMoviesGrid() {
-  const { movies, showtimes } = useAppStore();
+  const { data: movies = [] } = useMovies();
+  const { data: showtimes = [] } = useShowtimes();
   const nowShowing = movies.filter((m) => m.status === "now-showing");
 
   if (nowShowing.length === 0) {
@@ -83,7 +84,7 @@ export function NowShowingMoviesGrid() {
 }
 
 export function ComingSoonMoviesGrid() {
-  const { movies } = useAppStore();
+  const { data: movies = [] } = useMovies();
   const comingSoon = movies.filter((m) => m.status === "coming-soon");
 
   if (comingSoon.length === 0) {

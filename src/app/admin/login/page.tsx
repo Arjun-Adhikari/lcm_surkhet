@@ -6,7 +6,6 @@ import { Film, Lock, Mail, KeyRound, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAppStore } from "@/lib/store";
 import { GoogleSignInButton } from "@/components/google-signin";
 import { Toaster, toast } from "sonner";
 
@@ -14,7 +13,7 @@ type Mode = "login" | "signup" | "verify";
 
 export default function Login() {
   const router = useRouter();
-  const { settings } = useAppStore();
+  const [cinemaName, setCinemaName] = useState("Laxmi Chalchitra Mandir");
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
@@ -27,6 +26,11 @@ export default function Login() {
       .then((res) => {
         if (res.ok) router.replace("/admin/movies");
       })
+      .catch(() => {});
+
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => { if (data?.name) setCinemaName(data.name); })
       .catch(() => {});
   }, [router]);
 
@@ -110,7 +114,7 @@ export default function Login() {
             <Film className="w-8 h-8" />
           </div>
           <h1 className="text-2xl font-serif font-bold text-white">
-            {settings.name}
+            {cinemaName}
           </h1>
           <p className="text-zinc-400 mt-1">Admin Control Panel</p>
         </div>

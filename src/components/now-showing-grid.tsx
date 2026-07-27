@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { Clock } from "lucide-react";
-import { useAppStore } from "@/lib/store";
+import { useMovies, useShowtimes } from "@/lib/store";
 
 export function NowShowingGrid() {
-  const { movies, showtimes } = useAppStore();
+  const { data: movies = [] } = useMovies();
+  const { data: showtimes = [] } = useShowtimes();
   const nowShowing = movies.filter((m) => m.status === "now-showing").slice(0, 4);
 
   if (nowShowing.length === 0) return null;

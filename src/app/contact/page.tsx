@@ -1,7 +1,7 @@
 "use client";
 
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { useAppStore } from "@/lib/store";
+import { useSettings, DEFAULT_SETTINGS } from "@/lib/store";
 import { MapPin, Phone, Mail } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 
@@ -22,7 +22,8 @@ export default function Contact() {
 }
 
 function ContactContent() {
-  const { settings } = useAppStore();
+  const { data: settingsData } = useSettings();
+  const settings = settingsData ?? DEFAULT_SETTINGS;
 
   return (
     <div className="container mx-auto px-4 py-16">

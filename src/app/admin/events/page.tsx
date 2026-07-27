@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { useAppStore } from "@/lib/store";
+import { useAppStore, useEvents } from "@/lib/store";
 import type { Event } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,8 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function EventsAdmin() {
-  const { events, addEvent, updateEvent, deleteEvent } = useAppStore();
+  const { data: events = [] } = useEvents();
+  const { addEvent, updateEvent, deleteEvent } = useAppStore();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);

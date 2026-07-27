@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { useAppStore } from "@/lib/store";
+import { useAppStore, useAnnouncements } from "@/lib/store";
 import type { Announcement } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,8 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function AnnouncementsAdmin() {
-  const { announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement } = useAppStore();
+  const { data: announcements = [] } = useAnnouncements();
+  const { addAnnouncement, updateAnnouncement, deleteAnnouncement } = useAppStore();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
   const [confirm, setConfirm] = useState<{ title: string; description: string; onConfirm: () => void } | null>(null);

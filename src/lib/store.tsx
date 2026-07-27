@@ -92,15 +92,39 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
-interface AppContextType {
-  movies: Movie[];
-  moviesLoading: boolean;
-  showtimes: Showtime[];
-  events: Event[];
-  gallery: GalleryItem[];
-  announcements: Announcement[];
-  settings: CinemaSettings;
+const STALE_TIME = 1000 * 60 * 2;
 
+export function useMovies(opts?: { enabled?: boolean }) {
+  return useQuery({ queryKey: ["movies"], queryFn: () => fetchJson<Movie[]>(`${API_BASE}/movies`), staleTime: STALE_TIME, enabled: opts?.enabled ?? true });
+}
+
+export function useShowtimes(opts?: { enabled?: boolean }) {
+  return useQuery({ queryKey: ["showtimes"], queryFn: () => fetchJson<Showtime[]>(`${API_BASE}/showtimes`), staleTime: STALE_TIME, enabled: opts?.enabled ?? true });
+}
+
+export function useEvents(opts?: { enabled?: boolean }) {
+  return useQuery({ queryKey: ["events"], queryFn: () => fetchJson<Event[]>(`${API_BASE}/events`), staleTime: STALE_TIME, enabled: opts?.enabled ?? true });
+}
+
+export function useGallery(opts?: { enabled?: boolean }) {
+  return useQuery({ queryKey: ["gallery"], queryFn: () => fetchJson<GalleryItem[]>(`${API_BASE}/gallery`), staleTime: STALE_TIME, enabled: opts?.enabled ?? true });
+}
+
+export function useAnnouncements(opts?: { enabled?: boolean }) {
+  return useQuery({ queryKey: ["announcements"], queryFn: () => fetchJson<Announcement[]>(`${API_BASE}/announcements`), staleTime: STALE_TIME, enabled: opts?.enabled ?? true });
+}
+
+export function useSettings(opts?: { enabled?: boolean }) {
+  return useQuery({ queryKey: ["settings"], queryFn: () => fetchJson<CinemaSettings>(`${API_BASE}/settings`), staleTime: Infinity, enabled: opts?.enabled ?? true });
+}
+
+export const DEFAULT_SETTINGS: CinemaSettings = {
+  name: "Laxmi Chalchitra Mandir", address: "", phone: "", email: "",
+  openingTime: "", closingTime: "", ticketPolicy: "", mapEmbedUrl: "",
+  aboutText: "", facebookUrl: "", instagramUrl: "",
+};
+
+interface AppContextType {
   addMovie: (m: Omit<Movie, "id">) => Promise<void>;
   updateMovie: (id: string, m: Partial<Movie>) => Promise<void>;
   deleteMovie: (id: string) => Promise<void>;
@@ -130,26 +154,6 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
-  const STALE_TIME = 1000 * 60 * 2; // 2 minutes
-
-  const moviesQuery = useQuery({ queryKey: ["movies"], queryFn: () => fetchJson<Movie[]>(`${API_BASE}/movies`), staleTime: STALE_TIME });
-  const showtimesQuery = useQuery({ queryKey: ["showtimes"], queryFn: () => fetchJson<Showtime[]>(`${API_BASE}/showtimes`), staleTime: STALE_TIME });
-  const eventsQuery = useQuery({ queryKey: ["events"], queryFn: () => fetchJson<Event[]>(`${API_BASE}/events`), staleTime: STALE_TIME });
-  const galleryQuery = useQuery({ queryKey: ["gallery"], queryFn: () => fetchJson<GalleryItem[]>(`${API_BASE}/gallery`), staleTime: STALE_TIME });
-  const announcementsQuery = useQuery({ queryKey: ["announcements"], queryFn: () => fetchJson<Announcement[]>(`${API_BASE}/announcements`), staleTime: STALE_TIME });
-  const settingsQuery = useQuery({ queryKey: ["settings"], queryFn: () => fetchJson<CinemaSettings>(`${API_BASE}/settings`), staleTime: Infinity });
-
-  const movies = moviesQuery.data ?? [];
-  const showtimes = showtimesQuery.data ?? [];
-  const events = eventsQuery.data ?? [];
-  const gallery = galleryQuery.data ?? [];
-  const announcements = announcementsQuery.data ?? [];
-  const settings = settingsQuery.data ?? ({
-    name: "Laxmi Chalchitra Mandir", address: "", phone: "", email: "",
-    openingTime: "", closingTime: "", ticketPolicy: "", mapEmbedUrl: "",
-    aboutText: "", facebookUrl: "", instagramUrl: "",
-  } as CinemaSettings);
-
   const ref = (key: string) => () => { queryClient.invalidateQueries({ queryKey: [key] }); };
 
   const addMovieMutation = useMutation({ mutationFn: (m: Omit<Movie, "id">) => fetchJson<Movie>(`${API_BASE}/movies`, { method: "POST", body: JSON.stringify(m) }), onSettled: ref("movies") });
@@ -175,7 +179,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const updateSettingsMutation = useMutation({ mutationFn: (s: Partial<CinemaSettings>) => fetchJson<CinemaSettings>(`${API_BASE}/settings`, { method: "PATCH", body: JSON.stringify(s) }), onSettled: ref("settings") });
 
   const value: AppContextType = {
-    movies, moviesLoading: moviesQuery.isLoading, showtimes, events, gallery, announcements, settings,
     addMovie: (m) => addMovieMutation.mutateAsync(m) as unknown as Promise<void>,
     updateMovie: (id, m) => updateMovieMutation.mutateAsync({ id, ...m }) as unknown as Promise<void>,
     deleteMovie: (id) => deleteMovieMutation.mutateAsync(id) as unknown as Promise<void>,
