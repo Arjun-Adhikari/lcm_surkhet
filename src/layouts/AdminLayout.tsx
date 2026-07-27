@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Film,
   Calendar,
@@ -20,8 +20,33 @@ import { signOut, useSession } from "next-auth/react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { data: session } = useSession();
+  const [checking, setChecking] = useState(true);
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      setChecking(false);
+      return;
+    }
+    if (status === "unauthenticated") {
+      fetch("/api/auth/me")
+        .then((res) => {
+          if (res.ok) setChecking(false);
+          else router.replace("/admin/login");
+        })
+        .catch(() => router.replace("/admin/login"));
+    }
+  }, [status, router]);
+
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const navItems = [
     { href: "/admin/movies", label: "Movies", icon: Film },
